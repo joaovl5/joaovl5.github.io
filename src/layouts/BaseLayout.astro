@@ -1,23 +1,22 @@
 ---
-import '@/styles/tokens.css'
-import '@/styles/global.css'
-import '@/styles/md.css'
-import '@/styles/link-card.css'
-import '@/styles/code.css'
-import '@/styles/preview.css'
-import 'overlayscrollbars/styles/overlayscrollbars.css'
-import { siteConfig } from '@/config/site.config'
-import { isPostPage, isHomePage, buildUrl } from '@/utils/helpers'
-import type { PostFrontmatter, PostEntry, StructuredData } from '@/types'
-import Head from '@/components/Head.astro'
-import Header from '@/components/Header.astro'
-import Footer from '@/components/Footer.astro'
-import FAB from '@/components/FAB.svelte'
-import Sidebar from '@/components/Sidebar.astro'
-import { resolveCanonicalUrl } from '@/scripts/canonical'
+import '@/styles/tokens.css';
+import '@/styles/global.css';
+import '@/styles/md.css';
+import '@/styles/link-card.css';
+import '@/styles/code.css';
+import '@/styles/preview.css';
+import 'overlayscrollbars/styles/overlayscrollbars.css';
+import FAB from '@/components/FAB.svelte';
+import Footer from '@/components/Footer.astro';
+import Head from '@/components/Head.astro';
+import Header from '@/components/Header.astro';
+import Sidebar from '@/components/Sidebar.astro';
+import { siteConfig } from '@/config/site.config';
+import { resolveCanonicalUrl } from '@/scripts/canonical';
+import type { PostEntry, PostFrontmatter, StructuredData } from '@/types';
+import { buildUrl, isHomePage, isPostPage } from '@/utils/helpers';
 
-// 判断是否为文章页面
-const isPostsPage = isPostPage(Astro.url.pathname)
+const isPostsPage = isPostPage(Astro.url.pathname);
 
 interface Props {
   pageTitle?: string;
@@ -36,23 +35,27 @@ let {
   canonicalUrl = Astro.url.href,
   post = null,
   structuredData = null,
-  description = siteConfig.description
-} = Astro.props as Props
+  description = siteConfig.description,
+} = Astro.props as Props;
 
 if (postFrontmatter?.description) {
   // Override default description with post-specific one
   // and erase any HTML tags
-  description = postFrontmatter.description.replace(/<[^>]*>/g, '')
+  description = postFrontmatter.description.replace(/<[^>]*>/g, '');
 }
 if (postFrontmatter?.image?.url) {
-  ogImage = postFrontmatter.image.url
+  ogImage = postFrontmatter.image.url;
 }
 if (postFrontmatter?.url) {
-  const siteRoot = new URL(buildUrl(''), Astro.site || Astro.url.origin)
-  canonicalUrl = resolveCanonicalUrl(postFrontmatter.url, siteRoot, canonicalUrl)
+  const siteRoot = new URL(buildUrl(''), Astro.site || Astro.url.origin);
+  canonicalUrl = resolveCanonicalUrl(
+    postFrontmatter.url,
+    siteRoot,
+    canonicalUrl,
+  );
 }
 if (postFrontmatter?.title) {
-  pageTitle = `${postFrontmatter.title} | ${siteConfig.name}`
+  pageTitle = `${postFrontmatter.title} | ${siteConfig.name}`;
 }
 
 const isHome = isHomePage(Astro.url.pathname);
@@ -66,7 +69,7 @@ const isHome = isHomePage(Astro.url.pathname);
     ogImage={ogImage}
     canonicalUrl={canonicalUrl}
     structuredData={structuredData}
-    needGiscus={isPostsPage}
+    isArticle={isPostsPage}
   />
 
   <body>
@@ -95,7 +98,6 @@ const isHome = isHomePage(Astro.url.pathname);
         will-change: transform, opacity;
       }
 
-      /* 侧边栏 */
       .blog-post-sidebar {
         width: 320px;
         flex-shrink: 0;

@@ -1,16 +1,16 @@
-import { render } from "astro:content";
-import { experimental_AstroContainer } from "astro/container";
-import { getPublishedPosts, groupPostsByDirectory } from "@/utils/content";
-import { formatDate } from "@/utils/helpers";
-import { sanitizePostPreviewHtml } from "@/utils/excerpt";
+import { render } from 'astro:content';
+import { experimental_AstroContainer } from 'astro/container';
+import { getPublishedPosts, groupPostsByDirectory } from '@/utils/content';
+import { sanitizePostPreviewHtml } from '@/utils/excerpt';
+import { formatDate } from '@/utils/helpers';
 
 function escapeHtml(text: string) {
   return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 export async function getStaticPaths() {
@@ -39,8 +39,8 @@ export async function GET({ params }: { params: { id: string } }) {
 
       return new Response(wrappedHtml, {
         headers: {
-          "Content-Type": "text/html",
-          "Cache-Control": "no-cache",
+          'Content-Type': 'text/html',
+          'Cache-Control': 'no-cache',
         },
       });
     } catch (e) {
@@ -54,7 +54,7 @@ export async function GET({ params }: { params: { id: string } }) {
   const categoryPosts = posts.filter((p) => p.id.startsWith(`${cleanId}/`));
   if (categoryPosts.length > 0) {
     const categoryTitle = cleanId
-      .replace(/-/g, " ")
+      .replace(/-/g, ' ')
       .replace(/\b\w/g, (l) => l.toUpperCase());
     const sorted = categoryPosts.sort(
       (a, b) =>
@@ -70,17 +70,17 @@ export async function GET({ params }: { params: { id: string } }) {
         <div style="font-size: 0.85em; color: var(--text-muted);">${formatDate(p.data.date)}</div>
       </li>`;
     }
-    html += "</ul></div>";
+    html += '</ul></div>';
 
     const wrappedHtml = `<div id="preview-wrapper" data-title="Category: ${escapeHtml(categoryTitle)}" data-date="">${html}</div>`;
 
     return new Response(wrappedHtml, {
       headers: {
-        "Content-Type": "text/html",
-        "Cache-Control": "no-cache",
+        'Content-Type': 'text/html',
+        'Cache-Control': 'no-cache',
       },
     });
   }
 
-  return new Response("Post or category not found", { status: 404 });
+  return new Response('Post or category not found', { status: 404 });
 }

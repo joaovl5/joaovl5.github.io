@@ -1,99 +1,137 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { t } from '@/utils/i18n';
-  type Theme = 'light' | 'dark';
-  let theme: Theme = 'light';
-  let transitionSequence = 0;
-  let activeTransition: ViewTransition | null = null;
+import { onMount } from 'svelte';
+import { t } from '@/utils/i18n';
 
-  function savedTheme(): Theme | null {
-    try {
-      const saved = localStorage.getItem('theme');
-      return saved === 'light' || saved === 'dark' ? saved : null;
-    } catch {
-      return null;
-    }
+type Theme = 'light' | 'dark';
+let theme: Theme = 'light';
+let transitionSequence = 0;
+let activeTransition: ViewTransition | null = null;
+
+function savedTheme(): Theme | null {
+  try {
+    const saved = localStorage.getItem('theme');
+    return saved === 'light' || saved === 'dark' ? saved : null;
+  } catch {
+    return null;
   }
+}
 
-  function initialTheme(): Theme {
-    return savedTheme() || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+function initialTheme(): Theme {
+  return (
+    savedTheme() ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light')
+  );
+}
+
+function executeThemeChange(newTheme: Theme) {
+  theme = newTheme;
+  const html = document.documentElement;
+  html.classList.remove('light', 'dark');
+  html.classList.add(newTheme);
+  html.setAttribute('data-theme', newTheme);
+}
+
+function applyTheme(newTheme: Theme, event?: MouseEvent) {
+  const sequence = ++transitionSequence;
+  activeTransition?.skipTransition();
+  const html = document.documentElement;
+  html.classList.remove('theme-transitioning');
+  if (
+    !document.startViewTransition ||
+    !event ||
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ) {
+    activeTransition = null;
+    executeThemeChange(newTheme);
+    return;
   }
-
-  function executeThemeChange(newTheme: Theme) {
-    theme = newTheme;
-    const html = document.documentElement;
-    html.classList.remove('light', 'dark');
-    html.classList.add(newTheme);
-    html.setAttribute('data-theme', newTheme);
-  }
-
-  function applyTheme(newTheme: Theme, event?: MouseEvent) {
-    const sequence = ++transitionSequence;
-    activeTransition?.skipTransition();
-    const html = document.documentElement;
-    html.classList.remove('theme-transitioning');
-    if (!document.startViewTransition || !event || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      activeTransition = null;
-      executeThemeChange(newTheme);
-      return;
-    }
-    html.classList.add('theme-transitioning');
-    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    const x = event.detail === 0 ? rect.left + rect.width / 2 : event.clientX;
-    const y = event.detail === 0 ? rect.top + rect.height / 2 : event.clientY;
-    const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
-    try {
-      const transition = document.startViewTransition(() => { if (sequence === transitionSequence) executeThemeChange(newTheme); });
-      activeTransition = transition;
-      void transition.ready.then(() => {
+  html.classList.add('theme-transitioning');
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  const x = event.detail === 0 ? rect.left + rect.width / 2 : event.clientX;
+  const y = event.detail === 0 ? rect.top + rect.height / 2 : event.clientY;
+  const radius = Math.hypot(
+    Math.max(x, window.innerWidth - x),
+    Math.max(y, window.innerHeight - y),
+  );
+  try {
+    const transition = document.startViewTransition(() => {
+      if (sequence === transitionSequence) executeThemeChange(newTheme);
+    });
+    activeTransition = transition;
+    void transition.ready
+      .then(() => {
         if (sequence !== transitionSequence) return;
-        const clipPath = [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`];
-        html.animate({ clipPath: newTheme === 'dark' ? [...clipPath].reverse() : clipPath }, {
-          duration: 500,
-          easing: 'ease-in-out',
-          pseudoElement: newTheme === 'dark' ? '::view-transition-old(root)' : '::view-transition-new(root)',
-          fill: 'both'
-        });
-      }).catch(() => { /* A skipped transition still applies the theme. */ });
-      void transition.finished.catch(() => {}).finally(() => {
+        const clipPath = [
+          `circle(0px at ${x}px ${y}px)`,
+          `circle(${radius}px at ${x}px ${y}px)`,
+        ];
+        html.animate(
+          {
+            clipPath: newTheme === 'dark' ? [...clipPath].reverse() : clipPath,
+          },
+          {
+            duration: 500,
+            easing: 'ease-in-out',
+            pseudoElement:
+              newTheme === 'dark'
+                ? '::view-transition-old(root)'
+                : '::view-transition-new(root)',
+            fill: 'both',
+          },
+        );
+      })
+      .catch(() => {
+        /* A skipped transition still applies the theme. */
+      });
+    void transition.finished
+      .catch(() => {})
+      .finally(() => {
         if (sequence === transitionSequence) {
           html.classList.remove('theme-transitioning');
           activeTransition = null;
         }
       });
-    } catch {
-      html.classList.remove('theme-transitioning');
-      executeThemeChange(newTheme);
-    }
+  } catch {
+    html.classList.remove('theme-transitioning');
+    executeThemeChange(newTheme);
   }
+}
 
-  onMount(() => {
-    const current = document.documentElement.getAttribute('data-theme');
-    executeThemeChange(current === 'dark' || current === 'light' ? current : initialTheme());
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = (event: MediaQueryListEvent) => {
-      if (!savedTheme()) applyTheme(event.matches ? 'dark' : 'light');
-    };
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'theme' || event.key === null) applyTheme(initialTheme());
-    };
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      ++transitionSequence;
-      activeTransition?.skipTransition();
-      document.documentElement.classList.remove('theme-transitioning');
-      mediaQuery.removeEventListener('change', handleSystemThemeChange);
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  });
+onMount(() => {
+  const current = document.documentElement.getAttribute('data-theme');
+  executeThemeChange(
+    current === 'dark' || current === 'light' ? current : initialTheme(),
+  );
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  const handleSystemThemeChange = (event: MediaQueryListEvent) => {
+    if (!savedTheme()) applyTheme(event.matches ? 'dark' : 'light');
+  };
+  const handleStorageChange = (event: StorageEvent) => {
+    if (event.key === 'theme' || event.key === null) applyTheme(initialTheme());
+  };
+  mediaQuery.addEventListener('change', handleSystemThemeChange);
+  window.addEventListener('storage', handleStorageChange);
+  return () => {
+    ++transitionSequence;
+    activeTransition?.skipTransition();
+    document.documentElement.classList.remove('theme-transitioning');
+    mediaQuery.removeEventListener('change', handleSystemThemeChange);
+    window.removeEventListener('storage', handleStorageChange);
+  };
+});
 
-  function toggleTheme(event: MouseEvent) {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    theme = newTheme;
-    try { localStorage.setItem('theme', newTheme); } catch { /* Theme switching works without storage. */ }
-    applyTheme(newTheme, event);
+function toggleTheme(event: MouseEvent) {
+  const newTheme = theme === 'light' ? 'dark' : 'light';
+  theme = newTheme;
+  try {
+    localStorage.setItem('theme', newTheme);
+  } catch {
+    /* Theme switching works without storage. */
   }
+  applyTheme(newTheme, event);
+}
 </script>
 
 <button

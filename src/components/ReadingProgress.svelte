@@ -1,31 +1,32 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { t } from '@/utils/i18n';
+import { onMount } from 'svelte';
+import { t } from '@/utils/i18n';
 
-  let progress = 0;
+let progress = 0;
 
-  function updateProgress() {
-    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-    if (scrollHeight <= 0) {
-      progress = 0;
-      return;
-    }
-    progress = Math.min(100, Math.max(0, (window.scrollY / scrollHeight) * 100));
+function updateProgress() {
+  const scrollHeight =
+    document.documentElement.scrollHeight - window.innerHeight;
+  if (scrollHeight <= 0) {
+    progress = 0;
+    return;
   }
+  progress = Math.min(100, Math.max(0, (window.scrollY / scrollHeight) * 100));
+}
 
-  onMount(() => {
-    window.addEventListener('scroll', updateProgress, { passive: true });
-    window.addEventListener('resize', updateProgress);
-    const observer = new ResizeObserver(updateProgress);
-    observer.observe(document.body);
-    updateProgress();
+onMount(() => {
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+  const observer = new ResizeObserver(updateProgress);
+  observer.observe(document.body);
+  updateProgress();
 
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('scroll', updateProgress);
-      window.removeEventListener('resize', updateProgress);
-    };
-  });
+  return () => {
+    observer.disconnect();
+    window.removeEventListener('scroll', updateProgress);
+    window.removeEventListener('resize', updateProgress);
+  };
+});
 </script>
 
 <div class="progress-container" role="progressbar" aria-label={t('common.readingProgress')} aria-valuemin="0" aria-valuemax="100" aria-valuenow={Math.round(progress)}>

@@ -1,8 +1,8 @@
 ---
-import { siteConfig } from '@/config/site.config'
-import type { StructuredData } from '@/types'
-import { buildUrl } from '@/utils/helpers'
-import { serializeStructuredData } from '@/utils/structured-data'
+import { siteConfig } from '@/config/site.config';
+import type { StructuredData } from '@/types';
+import { buildUrl } from '@/utils/helpers';
+import { serializeStructuredData } from '@/utils/structured-data';
 
 interface Props {
   pageTitle: string;
@@ -10,7 +10,6 @@ interface Props {
   ogImage?: string;
   canonicalUrl?: string;
   structuredData?: StructuredData | null;
-  needGiscus?: boolean;
 }
 
 const {
@@ -19,13 +18,13 @@ const {
   ogImage = '',
   canonicalUrl = Astro.url.href,
   structuredData = null,
-  needGiscus = false
-} = Astro.props as Props
+  isArticle = false,
+} = Astro.props as Props;
 const structuredDataJson = structuredData
   ? serializeStructuredData(structuredData)
-  : null
+  : null;
 
-import { ClientRouter } from 'astro:transitions'
+import { ClientRouter } from 'astro:transitions';
 import 'nprogress/nprogress.css';
 ---
 
@@ -79,7 +78,7 @@ import 'nprogress/nprogress.css';
 
   <meta property="og:title" content={pageTitle} />
   <meta property="og:description" content={description} />
-  <meta property="og:type" content={needGiscus ? 'article' : 'website'} />
+  <meta property="og:type" content={isArticle ? 'article' : 'website'} />
   <meta property="og:url" content={canonicalUrl} />
   {ogImage && <meta property="og:image" content={ogImage} />}
   <meta property="og:site_name" content={siteConfig.name} />
@@ -140,8 +139,7 @@ import 'nprogress/nprogress.css';
     crossorigin
   />
 
-  <!-- 为文章页预载代码字体 -->
-  {needGiscus && (
+  {isArticle && (
     <link
       rel="preload"
       href={buildUrl('fonts/JetBrainsMono/fonts/variable/JetBrainsMono[wght].ttf')}
@@ -151,7 +149,6 @@ import 'nprogress/nprogress.css';
     />
   )}
 
-  <!-- 引入字体 (本地切片加载) -->
   <link
     rel="stylesheet"
     href={buildUrl('fonts/ChillRoundFRegular/result.css')}
@@ -164,14 +161,6 @@ import 'nprogress/nprogress.css';
     media="print"
     onload="this.setAttribute('media','all')"
   />
-
-  <!-- 预连接外部资源 (仅在需要时) -->
-  {needGiscus && (
-    <>
-      <link rel="preconnect" href="https://giscus.app" crossorigin />
-      <link rel="dns-prefetch" href="https://giscus.app" />
-    </>
-  )}
 
   <style is:inline set:html={`
     /* Localized Nunito */
@@ -193,7 +182,7 @@ import 'nprogress/nprogress.css';
     @font-face {
       font-family: 'JetBrains Mono';
       src: url('${buildUrl('fonts/JetBrainsMono/fonts/variable/JetBrainsMono[wght].ttf')}') format('truetype');
-      font-weight: 400 700; /* 缩小范围，减少计算 */
+      font-weight: 400 700;
       font-style: normal;
       font-display: swap;
     }

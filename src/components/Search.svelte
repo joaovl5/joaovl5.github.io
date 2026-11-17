@@ -1,164 +1,189 @@
 <script lang="ts">
-  import Fuse, { type FuseResult, type IFuseOptions } from 'fuse.js';
-  import { onMount, tick } from 'svelte';
-  import { t } from '@/utils/i18n';
-  import { buildUrl } from '@/utils/helpers';
-  import { generateExcerpt, highlightSegments, type SearchPost, type SearchWorkerMessage, type SearchWorkerResponse } from '@/scripts/search';
+import Fuse, { type FuseResult, type IFuseOptions } from 'fuse.js';
+import { onMount, tick } from 'svelte';
+import {
+  generateExcerpt,
+  highlightSegments,
+  type SearchPost,
+  type SearchWorkerMessage,
+  type SearchWorkerResponse,
+} from '@/scripts/search';
+import { buildUrl } from '@/utils/helpers';
+import { t } from '@/utils/i18n';
 
-  export let searchablePosts: readonly SearchPost[] = [];
+export let searchablePosts: readonly SearchPost[] = [];
 
-  let searchQuery = '';
-  let isSearchOpen = false;
-  let searchResults: FuseResult<SearchPost>[] = [];
-  let fuse: Fuse<SearchPost> | null = null;
-  let searchWorker: Worker | null = null;
-  let isWorkerReady = false;
-  let isIndexLoading = false;
-  let isIndexLoaded = false;
-  let indexError = false;
-  let mounted = false;
-  let requestId = 0;
-  let searchContainer: HTMLDivElement;
-  let searchInput: HTMLInputElement;
-  let searchToggle: HTMLButtonElement;
-  const indexController = new AbortController();
-  const fuseOptions: IFuseOptions<SearchPost> = {
-    includeScore: true,
-    threshold: 0.4,
-    ignoreLocation: true,
-    minMatchCharLength: 2,
-    keys: [
-      { name: 'title', weight: 3 },
-      { name: 'description', weight: 2 },
-      { name: 'content', weight: 1 },
-      { name: 'tags', weight: 1 }
-    ]
-  };
+let searchQuery = '';
+let isSearchOpen = false;
+let searchResults: FuseResult<SearchPost>[] = [];
+let fuse: Fuse<SearchPost> | null = null;
+let searchWorker: Worker | null = null;
+let isWorkerReady = false;
+let isIndexLoading = false;
+let isIndexLoaded = false;
+let indexError = false;
+let mounted = false;
+let requestId = 0;
+let searchContainer: HTMLDivElement;
+let searchInput: HTMLInputElement;
+let searchToggle: HTMLButtonElement;
+const indexController = new AbortController();
+const fuseOptions: IFuseOptions<SearchPost> = {
+  includeScore: true,
+  threshold: 0.4,
+  ignoreLocation: true,
+  minMatchCharLength: 2,
+  keys: [
+    { name: 'title', weight: 3 },
+    { name: 'description', weight: 2 },
+    { name: 'content', weight: 1 },
+    { name: 'tags', weight: 1 },
+  ],
+};
 
-  function fallbackSearch() {
-    searchResults = searchQuery ? fuse?.search(searchQuery, { limit: 5 }) || [] : [];
+function fallbackSearch() {
+  searchResults = searchQuery
+    ? fuse?.search(searchQuery, { limit: 5 }) || []
+    : [];
+}
+
+function disableWorker() {
+  searchWorker?.terminate();
+  searchWorker = null;
+  isWorkerReady = false;
+  fallbackSearch();
+}
+
+function search() {
+  requestId++;
+  if (!searchQuery) {
+    searchResults = [];
+    return;
   }
-
-  function disableWorker() {
-    searchWorker?.terminate();
-    searchWorker = null;
-    isWorkerReady = false;
-    fallbackSearch();
-  }
-
-  function search() {
-    requestId++;
-    if (!searchQuery) {
-      searchResults = [];
-      return;
-    }
-    if (isWorkerReady && searchWorker) {
-      const message: SearchWorkerMessage = { type: 'SEARCH', payload: { query: searchQuery, requestId } };
-      try {
-        searchWorker.postMessage(message);
-      } catch {
-        disableWorker();
-      }
-    } else {
-      fallbackSearch();
-    }
-  }
-
-  function initializeWorker(posts: SearchPost[]) {
+  if (isWorkerReady && searchWorker) {
+    const message: SearchWorkerMessage = {
+      type: 'SEARCH',
+      payload: { query: searchQuery, requestId },
+    };
     try {
-      searchWorker = new Worker(new URL('../workers/search-worker.ts', import.meta.url), { type: 'module' });
-      searchWorker.onmessage = (event: MessageEvent<SearchWorkerResponse>) => {
-        if (event.data.type === 'INITIALIZED') {
-          isWorkerReady = true;
-          search();
-        } else if (event.data.type === 'SEARCH_RESULTS') {
-          if (event.data.requestId === requestId && isSearchOpen) searchResults = event.data.payload;
-        } else {
-          disableWorker();
-        }
-      };
-      searchWorker.onerror = disableWorker;
-      const message: SearchWorkerMessage = { type: 'INIT', payload: { posts, options: fuseOptions } };
       searchWorker.postMessage(message);
     } catch {
       disableWorker();
     }
+  } else {
+    fallbackSearch();
   }
+}
 
-  async function loadFullIndex() {
-    if (isIndexLoaded || isIndexLoading) return;
-    isIndexLoading = true;
-    indexError = false;
-    try {
-      const response = await fetch(buildUrl('search-index.json'), { signal: indexController.signal });
-      if (!response.ok) throw new Error(`Search index HTTP ${response.status}`);
-      const posts: SearchPost[] = await response.json();
-      if (!Array.isArray(posts)) throw new Error('Invalid search index');
-      if (!mounted) return;
-      fuse = new Fuse(posts, fuseOptions);
-      isIndexLoaded = true;
-      search();
-      initializeWorker(posts);
-    } catch (error) {
-      if (mounted && !indexController.signal.aborted) {
-        indexError = true;
-        console.error('Failed to load search index:', error);
+function initializeWorker(posts: SearchPost[]) {
+  try {
+    searchWorker = new Worker(
+      new URL('../workers/search-worker.ts', import.meta.url),
+      { type: 'module' },
+    );
+    searchWorker.onmessage = (event: MessageEvent<SearchWorkerResponse>) => {
+      if (event.data.type === 'INITIALIZED') {
+        isWorkerReady = true;
+        search();
+      } else if (event.data.type === 'SEARCH_RESULTS') {
+        if (event.data.requestId === requestId && isSearchOpen)
+          searchResults = event.data.payload;
+      } else {
+        disableWorker();
       }
-    } finally {
-      isIndexLoading = false;
-    }
-  }
-
-  function closeSearch(restoreFocus = false) {
-    isSearchOpen = false;
-    searchQuery = '';
-    searchResults = [];
-    requestId++;
-    if (restoreFocus) searchToggle?.focus();
-  }
-
-  function handleClickOutside(event: MouseEvent) {
-    if (event.target instanceof Node && !searchContainer.contains(event.target)) closeSearch();
-  }
-
-  function handleSearchInput(event: Event) {
-    searchQuery = (event.target as HTMLInputElement).value.trim();
-    search();
-  }
-
-  async function toggleSearch() {
-    if (isSearchOpen) {
-      closeSearch();
-      return;
-    }
-    isSearchOpen = true;
-    void loadFullIndex();
-    await tick();
-    if (isSearchOpen) searchInput?.focus();
-  }
-
-  function handleSearchKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      closeSearch(true);
-    } else if (event.key === 'Enter' && !event.isComposing && searchResults.length > 0) {
-      event.preventDefault();
-      window.location.href = searchResults[0].item.url;
-    }
-  }
-
-  onMount(() => {
-    mounted = true;
-    fuse = new Fuse([...searchablePosts], fuseOptions);
-    document.addEventListener('click', handleClickOutside);
-    return () => {
-      mounted = false;
-      indexController.abort();
-      document.removeEventListener('click', handleClickOutside);
-      searchWorker?.terminate();
-      searchWorker = null;
     };
-  });
+    searchWorker.onerror = disableWorker;
+    const message: SearchWorkerMessage = {
+      type: 'INIT',
+      payload: { posts, options: fuseOptions },
+    };
+    searchWorker.postMessage(message);
+  } catch {
+    disableWorker();
+  }
+}
+
+async function loadFullIndex() {
+  if (isIndexLoaded || isIndexLoading) return;
+  isIndexLoading = true;
+  indexError = false;
+  try {
+    const response = await fetch(buildUrl('search-index.json'), {
+      signal: indexController.signal,
+    });
+    if (!response.ok) throw new Error(`Search index HTTP ${response.status}`);
+    const posts: SearchPost[] = await response.json();
+    if (!Array.isArray(posts)) throw new Error('Invalid search index');
+    if (!mounted) return;
+    fuse = new Fuse(posts, fuseOptions);
+    isIndexLoaded = true;
+    search();
+    initializeWorker(posts);
+  } catch (error) {
+    if (mounted && !indexController.signal.aborted) {
+      indexError = true;
+      console.error('Failed to load search index:', error);
+    }
+  } finally {
+    isIndexLoading = false;
+  }
+}
+
+function closeSearch(restoreFocus = false) {
+  isSearchOpen = false;
+  searchQuery = '';
+  searchResults = [];
+  requestId++;
+  if (restoreFocus) searchToggle?.focus();
+}
+
+function handleClickOutside(event: MouseEvent) {
+  if (event.target instanceof Node && !searchContainer.contains(event.target))
+    closeSearch();
+}
+
+function handleSearchInput(event: Event) {
+  searchQuery = (event.target as HTMLInputElement).value.trim();
+  search();
+}
+
+async function toggleSearch() {
+  if (isSearchOpen) {
+    closeSearch();
+    return;
+  }
+  isSearchOpen = true;
+  void loadFullIndex();
+  await tick();
+  if (isSearchOpen) searchInput?.focus();
+}
+
+function handleSearchKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeSearch(true);
+  } else if (
+    event.key === 'Enter' &&
+    !event.isComposing &&
+    searchResults.length > 0
+  ) {
+    event.preventDefault();
+    window.location.href = searchResults[0].item.url;
+  }
+}
+
+onMount(() => {
+  mounted = true;
+  fuse = new Fuse([...searchablePosts], fuseOptions);
+  document.addEventListener('click', handleClickOutside);
+  return () => {
+    mounted = false;
+    indexController.abort();
+    document.removeEventListener('click', handleClickOutside);
+    searchWorker?.terminate();
+    searchWorker = null;
+  };
+});
 </script>
 
 <div bind:this={searchContainer} class="search-container" role="search" aria-label={t('common.search.region')}>

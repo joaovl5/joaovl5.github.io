@@ -1,12 +1,12 @@
 ---
-import PostList from '@/components/PostList/PostList.svelte'
-import BaseLayout from '@/layouts/BaseLayout.astro'
-import { type CollectionEntry } from 'astro:content'
-import { getPublishedPosts, groupPostsByDirectory } from '@/utils/content'
-import '@/components/PostList/PostList.css'
-import { t } from '@/utils/i18n'
-import Breadcrumb from '@/components/Breadcrumb.svelte'
-import { generateBreadcrumbItems } from '@/utils/helpers'
+import type { CollectionEntry } from 'astro:content';
+import PostList from '@/components/PostList/PostList.svelte';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getPublishedPosts, groupPostsByDirectory } from '@/utils/content';
+import '@/components/PostList/PostList.css';
+import Breadcrumb from '@/components/Breadcrumb.svelte';
+import { generateBreadcrumbItems } from '@/utils/helpers';
+import { t } from '@/utils/i18n';
 
 type StaticPath = {
   params: {
@@ -19,15 +19,17 @@ type StaticPath = {
 };
 
 export async function getStaticPaths(): Promise<StaticPath[]> {
-  const posts = await getPublishedPosts()
-  const categories = groupPostsByDirectory(posts)
+  const posts = await getPublishedPosts();
+  const categories = groupPostsByDirectory(posts);
 
-  return Array.from(categories.entries()).filter(([category]) => !category.includes('/')).map(
-    ([category, posts]): StaticPath => ({
-      params: { category },
-      props: { category, posts }
-    })
-  )
+  return Array.from(categories.entries())
+    .filter(([category]) => !category.includes('/'))
+    .map(
+      ([category, posts]): StaticPath => ({
+        params: { category },
+        props: { category, posts },
+      }),
+    );
 }
 
 interface Props {
@@ -35,12 +37,14 @@ interface Props {
   posts: CollectionEntry<'posts'>[];
 }
 
-const { category, posts } = Astro.props
+const { category, posts } = Astro.props;
 
-const breadcrumbItems = generateBreadcrumbItems(category, true)
-const categoryTitle = category.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+const breadcrumbItems = generateBreadcrumbItems(category, true);
+const categoryTitle = category
+  .replace(/-/g, ' ')
+  .replace(/\b\w/g, (l) => l.toUpperCase());
 const sortedPosts = [...posts].sort(
-  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
 );
 ---
 
@@ -67,7 +71,6 @@ const sortedPosts = [...posts].sort(
     </div>
   </article>
   <style>
-    /* 文章容器 */
     .blog-post-container {
       display: flex;
       gap: 3rem;
@@ -75,7 +78,6 @@ const sortedPosts = [...posts].sort(
       padding: 1rem;
     }
 
-    /* 主要内容区域 */
     .blog-post-content {
       flex: 1;
       min-width: 0;

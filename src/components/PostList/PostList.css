@@ -27,7 +27,6 @@
   background-color: var(--color-theme-mix-5);
 }
 
-/* 日期样式（左侧固定宽度） */
 .post-date {
   font-size: 14px;
   color: var(--text-secondary);

@@ -1,5 +1,5 @@
-import { extractExcerptFromMarkdown, getPostUrl } from "@/utils/helpers";
-import { getPublishedPosts } from "@/utils/content";
+import { getPublishedPosts } from '@/utils/content';
+import { extractExcerptFromMarkdown, getPostUrl } from '@/utils/helpers';
 
 export async function GET() {
   const allPosts = await getPublishedPosts();
@@ -8,17 +8,17 @@ export async function GET() {
     title: post.data.title,
     excerpt:
       post.data.description ||
-      extractExcerptFromMarkdown(post.body || "") ||
-      "无摘要",
+      extractExcerptFromMarkdown(post.body || '') ||
+      'No excerpt',
     url: getPostUrl(post.id),
-    content: post.body || "",
+    content: post.body || '',
     description: post.data.description,
     tags: post.data.tags,
   }));
 
   return new Response(JSON.stringify(searchablePosts), {
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
 }

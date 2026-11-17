@@ -1,10 +1,10 @@
-import { siteConfig } from "@/config/site.config";
-import type { PostEntry, StructuredData } from "@/types";
-import { buildUrl, getPostUrl } from "./helpers";
+import { siteConfig } from '@/config/site.config';
+import type { PostEntry, StructuredData } from '@/types';
+import { buildUrl, getPostUrl } from './helpers';
 
 /** Encode JSON-LD as script text without allowing HTML tokenizer transitions. */
 export function serializeStructuredData(data: StructuredData): string {
-  return JSON.stringify(data).replace(/</g, "\\u003c");
+  return JSON.stringify(data).replace(/</g, '\\u003c');
 }
 
 export function generatePostStructuredData(
@@ -16,10 +16,10 @@ export function generatePostStructuredData(
   const postUrl = new URL(getPostUrl(post.id), origin).toString();
 
   const blogPosting = {
-    "@type": "BlogPosting",
+    '@type': 'BlogPosting',
     mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": postUrl,
+      '@type': 'WebPage',
+      '@id': postUrl,
     },
     headline: post.data.title,
     description: post.data.description || description,
@@ -27,30 +27,30 @@ export function generatePostStructuredData(
       ? { image: new URL(post.data.image.url, origin).toString() }
       : {}),
     author: {
-      "@type": "Person",
+      '@type': 'Person',
       name: post.data.author || siteConfig.author.name,
     },
     datePublished: post.data.date,
     dateModified: post.data.updated || post.data.date,
     publisher: {
-      "@type": "Organization",
+      '@type': 'Organization',
       name: siteConfig.name,
       logo: {
-        "@type": "ImageObject",
-        url: new URL(buildUrl("favicon.svg"), origin).toString(),
+        '@type': 'ImageObject',
+        url: new URL(buildUrl('favicon.svg'), origin).toString(),
       },
     },
     url: postUrl,
-    articleSection: post.data.tags?.[0] || "",
-    keywords: post.data.tags?.join(", ") || "",
+    articleSection: post.data.tags?.[0] || '',
+    keywords: post.data.tags?.join(', ') || '',
   };
 
   const breadcrumbList =
     breadcrumbs && breadcrumbs.length > 0
       ? {
-          "@type": "BreadcrumbList",
+          '@type': 'BreadcrumbList',
           itemListElement: breadcrumbs.map((crumb, index) => ({
-            "@type": "ListItem",
+            '@type': 'ListItem',
             position: index + 1,
             name: crumb.label,
             item: new URL(crumb.href, origin).toString(),
@@ -61,32 +61,32 @@ export function generatePostStructuredData(
   const graph = breadcrumbList ? [blogPosting, breadcrumbList] : [blogPosting];
 
   return {
-    "@context": "https://schema.org",
-    "@graph": graph,
+    '@context': 'https://schema.org',
+    '@graph': graph,
   };
 }
 
 export function generateWebsiteStructuredData(origin: string): StructuredData {
   const siteNavigationElements = siteConfig.navItems.map((item) => ({
-    "@type": "SiteNavigationElement",
+    '@type': 'SiteNavigationElement',
     name: item.label,
     url: new URL(buildUrl(item.href), origin).toString(),
   }));
 
   return {
-    "@context": "https://schema.org",
-    "@graph": [
+    '@context': 'https://schema.org',
+    '@graph': [
       {
-        "@type": "WebSite",
-        url: new URL(buildUrl(""), origin).toString(),
+        '@type': 'WebSite',
+        url: new URL(buildUrl(''), origin).toString(),
         name: siteConfig.name,
         description: siteConfig.description,
         publisher: {
-          "@type": "Organization",
+          '@type': 'Organization',
           name: siteConfig.name,
           logo: {
-            "@type": "ImageObject",
-            url: new URL(buildUrl("favicon.svg"), origin).toString(),
+            '@type': 'ImageObject',
+            url: new URL(buildUrl('favicon.svg'), origin).toString(),
           },
         },
       },
@@ -100,10 +100,10 @@ export function generatePostListStructuredData(
   origin: string,
 ): StructuredData {
   const itemList = {
-    "@type": "ItemList",
-    name: "Recent posts",
+    '@type': 'ItemList',
+    name: 'Recent posts',
     itemListElement: posts.map((p, i) => ({
-      "@type": "ListItem",
+      '@type': 'ListItem',
       position: i + 1,
       url: new URL(p.url, origin).toString(),
       name: p.title,
@@ -111,40 +111,40 @@ export function generatePostListStructuredData(
   };
 
   const siteNavigationElements = siteConfig.navItems.map((item) => ({
-    "@type": "SiteNavigationElement",
+    '@type': 'SiteNavigationElement',
     name: item.label,
     url: new URL(buildUrl(item.href), origin).toString(),
   }));
 
   return {
-    "@context": "https://schema.org",
-    "@graph": [
+    '@context': 'https://schema.org',
+    '@graph': [
       {
-        "@type": "WebSite",
-        url: new URL(buildUrl(""), origin).toString(),
+        '@type': 'WebSite',
+        url: new URL(buildUrl(''), origin).toString(),
         name: siteConfig.name,
         description: siteConfig.description,
         publisher: {
-          "@type": "Organization",
+          '@type': 'Organization',
           name: siteConfig.name,
           logo: {
-            "@type": "ImageObject",
-            url: new URL(buildUrl("favicon.svg"), origin).toString(),
+            '@type': 'ImageObject',
+            url: new URL(buildUrl('favicon.svg'), origin).toString(),
           },
         },
       },
       {
-        "@type": "CollectionPage",
-        name: "Recent posts",
-        url: new URL(buildUrl(""), origin).toString(),
+        '@type': 'CollectionPage',
+        name: 'Recent posts',
+        url: new URL(buildUrl(''), origin).toString(),
         description: siteConfig.description,
         mainEntity: itemList,
         publisher: {
-          "@type": "Organization",
+          '@type': 'Organization',
           name: siteConfig.name,
           logo: {
-            "@type": "ImageObject",
-            url: new URL(buildUrl("favicon.svg"), origin).toString(),
+            '@type': 'ImageObject',
+            url: new URL(buildUrl('favicon.svg'), origin).toString(),
           },
         },
       },

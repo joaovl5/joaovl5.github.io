@@ -1,4 +1,4 @@
-import type { CollectionEntry } from "astro:content";
+import type { CollectionEntry } from 'astro:content';
 
 export interface PostImage {
   url: string;
@@ -29,11 +29,11 @@ export interface PostData {
   pinned?: boolean;
 }
 
-export type PostEntry = CollectionEntry<"posts">;
+export type PostEntry = CollectionEntry<'posts'>;
 
 export interface StructuredData {
-  "@context"?: string;
-  "@type"?: string;
+  '@context'?: string;
+  '@type'?: string;
   [key: string]: unknown;
 }
 

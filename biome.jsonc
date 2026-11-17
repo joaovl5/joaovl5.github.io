@@ -24,12 +24,13 @@
   },
   "linter": {
     "domains": {
-      "svelte": "all",
-      "tailwind": "all"
+      "svelte": "none",
+      "tailwind": "recommended",
+      "astro": "none"
     },
     "enabled": true,
     "rules": {
-      "preset": "recommended"
+      "preset": "none"
     }
   },
   "vcs": {

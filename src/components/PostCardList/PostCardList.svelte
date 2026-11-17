@@ -1,25 +1,31 @@
 <!-- PostCardList.svelte -->
 <script lang="ts">
-  import { sanitizeViewTransitionName, getTagUrl } from "@/utils/helpers";
-  import { formatDate } from "@/utils/helpers";
-  import { t } from "@/utils/i18n";
-  interface CardPost {
-    id: string;
-    title: string;
-    url: string;
-    date: string | Date;
-    pinned?: boolean;
-    tags?: string[];
-    excerptHtml: string;
-  }
-  export let posts: CardPost[] | (() => CardPost[]) = [];
-  export let selectedTags: Set<string> | null = null;
+import {
+  formatDate,
+  getTagUrl,
+  sanitizeViewTransitionName,
+} from '@/utils/helpers';
+import { t } from '@/utils/i18n';
 
-  $: postsArr = [...(typeof posts === 'function' ? posts() : posts || [])].sort((a, b) => {
+interface CardPost {
+  id: string;
+  title: string;
+  url: string;
+  date: string | Date;
+  pinned?: boolean;
+  tags?: string[];
+  excerptHtml: string;
+}
+export let posts: CardPost[] | (() => CardPost[]) = [];
+export let selectedTags: Set<string> | null = null;
+
+$: postsArr = [...(typeof posts === 'function' ? posts() : posts || [])].sort(
+  (a, b) => {
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
     return new Date(b.date).getTime() - new Date(a.date).getTime();
-  });
+  },
+);
 </script>
 
 {#if postsArr.length === 0}

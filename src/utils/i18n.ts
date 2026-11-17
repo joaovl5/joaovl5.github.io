@@ -1,10 +1,10 @@
 import {
+  getLocale,
   i18nConfig,
   type SupportedLocale,
-  getLocale,
   t as tBase,
-} from "@/config/i18n.config";
-import { siteConfig } from "@/config/site.config";
+} from '@/config/i18n.config';
+import { siteConfig } from '@/config/site.config';
 
 export type { SupportedLocale };
 

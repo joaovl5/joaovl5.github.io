@@ -1,18 +1,22 @@
 <script lang="ts">
-  import { t } from "@/utils/i18n";
-  import { getPostUrl, getTagUrl, sanitizeViewTransitionName } from "@/utils/helpers";
+import {
+  getPostUrl,
+  getTagUrl,
+  sanitizeViewTransitionName,
+} from '@/utils/helpers';
+import { t } from '@/utils/i18n';
 
-  interface Post {
-    id: string;
-    data: {
-      title: string;
-      date: string | Date;
-      tags: string[];
-    };
-  }
+interface Post {
+  id: string;
+  data: {
+    title: string;
+    date: string | Date;
+    tags: string[];
+  };
+}
 
-  export let posts: Post[];
-  $: postsArr = posts;
+export let posts: Post[];
+$: postsArr = posts;
 </script>
 
 {#if postsArr.length === 0}

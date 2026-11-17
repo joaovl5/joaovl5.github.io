@@ -27,5 +27,6 @@ in
     packages = with pkgs; [
       pnpm
       (node-tool "astro-ls")
+      (node-tool "svelteserver")
     ];
   }

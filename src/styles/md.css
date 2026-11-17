@@ -1,4 +1,3 @@
-/* Markdown 内容容器 */
 .markdown-body {
   line-height: 1.75;
   font-size: 1.05rem;
@@ -7,7 +6,6 @@
   overflow-wrap: break-word;
 }
 
-/* 标题样式 */
 .markdown-body h1 {
   font-size: 2.2rem;
   margin: 2.5rem 0 1.5rem;
@@ -54,13 +52,11 @@
   font-style: italic;
 }
 
-/* 段落样式 */
 .markdown-body p {
   margin: 1.2rem 0;
   line-height: 1.8;
 }
 
-/* 外部单行链接样式 (如 Timeline 标题，使用原来支持弹起和变色的 ::after 伪元素) */
 article:not(.blog-post-container) a {
   color: var(--primary-color);
   font-weight: 600;
@@ -90,17 +86,13 @@ article:not(.blog-post-container) a:hover:after {
   background-color: color-mix(in srgb, var(--primary-color) 15%, transparent);
 }
 
-/* Markdown 内部多行链接样式 */
 .markdown-body a {
   color: var(--primary-color);
   font-weight: 600;
-  /* 加粗一点显得更可爱 */
   text-decoration: none;
 
-  /* 顶部留出充足的空间，给果冻回弹提供“冲刺区” */
   padding: 6px 4px 0 4px;
   margin: 0 -2px;
-  /* 稍微补偿一下左右 padding */
 
   background-image: linear-gradient(
     var(--color-primary-mix-20),
@@ -109,9 +101,7 @@ article:not(.blog-post-container) a:hover:after {
   background-repeat: no-repeat;
   background-position: bottom center;
   background-size: 100% 6px;
-  /* 初始状态是底部的粗线 */
 
-  /* 舍弃圆角，走硬朗可爱的平直马克笔路线，完美配合果冻回弹 */
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   transition:
@@ -121,14 +111,8 @@ article:not(.blog-post-container) a:hover:after {
 
 .markdown-body a:hover {
   background-size: 100% 75%;
-  /* 稳定在 75%，但冲刺时会突破到 100% 顶满顶部 padding，展现完美果冻感！ */
 }
 
-/* =========================================
-   列表高级样式 (Lists)
-   ========================================= */
-
-/* 取消无序列表默认圆点，由伪元素接管 */
 .markdown-body ul {
   list-style: none;
   padding-left: 1.5rem;
@@ -142,13 +126,11 @@ article:not(.blog-post-container) a:hover:after {
   padding-left: 0.5rem;
 }
 
-/* 一级无序列表：实心小圆点 */
 .markdown-body ul > li::before {
   content: "";
   position: absolute;
   left: -1rem;
   top: 0.75rem;
-  /* 对齐文字视觉中心 */
   width: 6px;
   height: 6px;
   background-color: var(--primary-color);
@@ -163,14 +145,12 @@ article:not(.blog-post-container) a:hover:after {
   background-color: color-mix(in srgb, var(--primary-color) 80%, white);
 }
 
-/* 多级无序列表（嵌套列表） */
 .markdown-body ul ul {
   position: relative;
   margin: 0.4rem 0 0.4rem 0.2rem;
   padding-left: 1.2rem;
 }
 
-/* 二级无序列表：空心圆圈 */
 .markdown-body ul ul > li::before {
   background-color: transparent;
   border: 2px solid var(--primary-color);
@@ -179,7 +159,6 @@ article:not(.blog-post-container) a:hover:after {
   left: -1rem;
 }
 
-/* 三级无序列表：小方块 */
 .markdown-body ul ul ul > li::before {
   background-color: var(--text-secondary);
   border: none;
@@ -189,9 +168,6 @@ article:not(.blog-post-container) a:hover:after {
   left: -1rem;
 }
 
-/* =========================================
-   有序列表 (Ordered Lists)
-   ========================================= */
 .markdown-body ol {
   list-style: none;
   padding-left: 1.5rem;
@@ -205,7 +181,6 @@ article:not(.blog-post-container) a:hover:after {
   padding-left: 0.5rem;
 }
 
-/* 有序列表数字：粗体、主色调、带点 */
 .markdown-body ol > li::before {
   content: counter(list-item) ".";
   position: absolute;
@@ -231,14 +206,10 @@ article:not(.blog-post-container) a:hover:after {
   margin: 0.4rem 0 0.4rem 0;
 }
 
-/* 为 .markdown-body details 和 .markdown-body summary 添加样式 */
-
 .markdown-body details {
   background-color: var(--bg-secondary);
   border: 2px dashed var(--border-color);
-  /* 可爱的虚线边框 */
   border-radius: 12px;
-  /* 更大的圆角 */
   margin-bottom: 1rem;
   overflow: hidden;
   transition:
@@ -250,9 +221,7 @@ article:not(.blog-post-container) a:hover:after {
 
 .markdown-body details:hover {
   border-color: color-mix(in srgb, var(--primary-color) 50%, transparent);
-  /* 悬浮时边框变色 */
   transform: translateY(-2px);
-  /* 悬浮轻轻上浮 */
   box-shadow: 0 4px 12px
     color-mix(in srgb, var(--primary-color) 5%, transparent);
 }
@@ -260,13 +229,10 @@ article:not(.blog-post-container) a:hover:after {
 .markdown-body details[open] {
   background-color: var(--bg-tertiary);
   border-style: solid;
-  /* 展开时变成实线 */
 }
 
-/* 给内部的内容增加左右和底部的留白（如果不包含 .details-content 包装器） */
 .markdown-body details[open] > *:not(summary) {
   padding-left: 3rem;
-  /* 刚好和上面的 summary 文字对齐 */
   padding-right: 1.5rem;
 }
 
@@ -277,7 +243,6 @@ article:not(.blog-post-container) a:hover:after {
 .markdown-body summary {
   display: block;
   padding: 0.8rem 1rem 0.8rem 3rem;
-  /* 增加一点内边距让它胖乎乎的 */
   cursor: pointer;
   font-weight: 600;
   color: var(--text-primary);
@@ -288,14 +253,12 @@ article:not(.blog-post-container) a:hover:after {
   line-height: 1.4;
 }
 
-/* 隐藏所有浏览器的默认详情标记 */
 .markdown-body summary::-webkit-details-marker {
   display: none;
 }
 
 .markdown-body details[open] summary {
   border-bottom: 2px dashed var(--border-color);
-  /* 展开时下方加个分割线 */
   margin-bottom: 0.5rem;
 }
 
@@ -304,7 +267,6 @@ article:not(.blog-post-container) a:hover:after {
   content: "";
 }
 
-/* 使用伪元素创建自定义箭头 */
 .markdown-body summary::before {
   content: "";
   position: absolute;
@@ -313,19 +275,15 @@ article:not(.blog-post-container) a:hover:after {
   transform: translateY(-50%) rotate(0deg);
   width: 1.4rem;
   height: 1.4rem;
-  /* 更可爱的圆润箭头 */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e7eff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18l6-6-6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 60%;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  /* 箭头果冻动画 */
   background-color: color-mix(in srgb, var(--primary-color) 12%, transparent);
-  /* 箭头背景是个小圆圈 */
   border-radius: 50%;
 }
 
-/* 黑暗主题下的箭头颜色 */
 [data-theme="dark"] .markdown-body summary::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff9eb6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18l6-6-6-6'/%3E%3C/svg%3E");
 }
@@ -334,14 +292,12 @@ article:not(.blog-post-container) a:hover:after {
   transform: translateY(-50%) rotate(90deg);
 }
 
-/* details 内部的内容样式 */
 .markdown-body details .details-content {
   padding: 0.5rem 1.5rem 1.5rem 3rem;
   color: var(--text-primary);
   line-height: 1.6;
 }
 
-/* 为 details 内容添加平滑展开动画 */
 .markdown-body details[open] .details-content {
   animation: fadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
@@ -358,22 +314,16 @@ article:not(.blog-post-container) a:hover:after {
   }
 }
 
-/* 引用块样式 */
 .markdown-body blockquote {
   position: relative;
   margin: 1.5rem 0;
-  /* 增加上下外边距 */
   padding: 1.2rem 1.5rem 1.2rem 2.5rem;
-  /* 更胖乎乎的内边距 */
   background-color: color-mix(in srgb, var(--theme-color) 8%, transparent);
-  /* 用主题色的超淡混合色，更通透可爱！ */
   border-radius: 1.2rem;
-  /* 更大更圆润 */
   font-style: italic;
   border: none;
 }
 
-/* 独立绘制的一条左侧短线，悬浮在圆角背景中 */
 .markdown-body blockquote::before {
   content: "";
   position: absolute;
@@ -381,7 +331,6 @@ article:not(.blog-post-container) a:hover:after {
   top: 1.2rem;
   bottom: 1.2rem;
   width: 6px;
-  /* 加粗一点点，变成可爱的小药丸 */
   background-color: var(--theme-color);
   border-radius: 3px;
 }
@@ -391,69 +340,54 @@ article:not(.blog-post-container) a:hover:after {
   color: var(--text-secondary);
 }
 
-/* 代码样式 */
 .markdown-body p code {
   background: color-mix(in srgb, var(--primary-color) 12%, transparent);
   color: var(--primary-color);
   padding: 4px 8px;
-  /* 胖一点的 code */
   border-radius: 8px;
   font-size: 0.9em;
   font-weight: 500;
 }
 
-/* 水平线样式 */
 .markdown-body hr {
   border: none;
   height: 6px;
-  /* 可爱的波点分割线！ */
   background-image: radial-gradient(
     circle,
     var(--primary-color) 3px,
     transparent 3.5px
   );
   background-size: 20px 100%;
-  /* 稍微拉开波点的间距 */
   background-position: center;
   background-repeat: repeat-x;
   opacity: 0.3;
-  /* 柔和一点 */
   margin: 3.5rem auto;
   width: 40%;
-  /* 短一点更精致 */
 }
 
-/* 图片样式 */
 .markdown-body img {
   max-width: 100%;
   height: auto;
   border-radius: 1rem;
-  /* 更圆润的图片 */
   margin: 2rem 0;
   box-shadow: 0 10px 30px -10px
     color-mix(in srgb, var(--primary-color) 30%, transparent);
-  /* 可爱柔和的彩色阴影 */
   display: block;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  /* 果冻动画 */
 }
 
 .markdown-body img:hover {
   transform: scale(1.02) translateY(-4px);
-  /* 图片悬浮有轻微放大和上浮，非常Q弹 */
 }
 
-/* 强调文本样式 */
 .markdown-body strong {
   color: var(--text-primary);
-  /* 换回主文本色，不和链接冲突 */
   font-weight: 750;
   background: linear-gradient(
     to top,
     color-mix(in srgb, var(--theme-color) 25%, transparent) 40%,
     transparent 40%
   );
-  /* 改用 theme-color 并且稍微抬高一点高亮区，形成不一样的荧光笔划重点感 */
   padding: 0 2px;
 }
 
@@ -468,20 +402,15 @@ article:not(.blog-post-container) a:hover:after {
   background: color-mix(in srgb, var(--bg-secondary) 80%, var(--primary-color));
   padding: 3px 6px;
   border-radius: 6px;
-  /* 圆角上标 */
   font-size: 0.75em;
   font-weight: 600;
 }
 
-/* 键盘按键样式 */
 .markdown-body kbd {
   background-color: var(--bg-tertiary);
   border: 2px solid var(--border-color);
-  /* 粗一点的边框更有玩具感 */
   border-radius: 8px;
-  /* 圆角按键 */
   box-shadow: 0 3px 0 var(--border-color);
-  /* 玩具按键的厚度 */
   color: var(--text-primary);
   display: inline-block;
   font-family: monospace;
@@ -496,17 +425,14 @@ article:not(.blog-post-container) a:hover:after {
 
 .markdown-body kbd:active {
   transform: translateY(1px);
-  /* 按下去的效果 */
   box-shadow: 0 0px 0 var(--border-color);
 }
 
-/* 脚注样式 */
 .markdown-body .footnotes {
   margin-top: 3.5rem;
   padding-top: 1.5rem;
   border-top: 2px dashed
     color-mix(in srgb, var(--border-color) 50%, transparent);
-  /* 虚线 */
   font-size: 0.9em;
   color: var(--text-secondary);
 }

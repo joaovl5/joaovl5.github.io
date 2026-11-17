@@ -1,36 +1,42 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { t } from '@/utils/i18n';
+import { onMount } from 'svelte';
+import { t } from '@/utils/i18n';
 
-  interface FABProps {
-    showThreshold?: number;
-    position?: {
-      bottom?: string;
-      right?: string;
-    };
-  }
-
-  export let showThreshold: number = 300;
-  export let position: NonNullable<FABProps['position']> = {};
-  let isVisible: boolean = false;
-
-  const handleScroll = (): void => {
-    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-    isVisible = scrollTop > showThreshold;
+interface FABProps {
+  showThreshold?: number;
+  position?: {
+    bottom?: string;
+    right?: string;
   };
+}
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
-  };
+export let showThreshold: number = 300;
+export let position: NonNullable<FABProps['position']> = {};
+let isVisible: boolean = false;
 
-  onMount(() => {
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+const handleScroll = (): void => {
+  const scrollTop =
+    document.documentElement.scrollTop || document.body.scrollTop;
+  isVisible = scrollTop > showThreshold;
+};
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? 'instant'
+      : 'smooth',
   });
+};
 
-  const defaultPosition = { bottom: '32px', right: '32px' };
-  const fabPosition = { ...defaultPosition, ...position };
+onMount(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll();
+  return () => window.removeEventListener('scroll', handleScroll);
+});
+
+const defaultPosition = { bottom: '32px', right: '32px' };
+const fabPosition = { ...defaultPosition, ...position };
 </script>
 
 <button
@@ -58,7 +64,6 @@
     border: none;
     outline: none;
     border-radius: 50%;
-    /* 使用 color-mix 实现半透明毛玻璃感 */
     background-color: color-mix(in srgb, var(--primary-color) 15%, transparent);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);

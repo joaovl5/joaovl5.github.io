@@ -1,58 +1,50 @@
 ---
-import { type CollectionEntry } from 'astro:content'
-import { siteConfig } from '@/config/site.config'
-import type { PostEntry } from '@/types'
-import Tag from './Tag.astro'
-import { t } from '@/utils/i18n'
-import { getPublishedPosts } from '@/utils/content'
-import { formatDate } from '@/utils/helpers'
+import type { CollectionEntry } from 'astro:content';
+import { siteConfig } from '@/config/site.config';
+import type { PostEntry } from '@/types';
+import { getPublishedPosts } from '@/utils/content';
+import { formatDate } from '@/utils/helpers';
+import { t } from '@/utils/i18n';
+import Tag from './Tag.astro';
 
 interface Props {
-  intro?: string; // 一句话简介（可选）
+  intro?: string;
   post?: PostEntry | null; // post
 }
 
-const { intro = siteConfig.description, post = null } = Astro.props as Props
+const { intro = siteConfig.description, post = null } = Astro.props as Props;
 
-const allBlogPosts: CollectionEntry<'posts'>[] = await getPublishedPosts()
+const allBlogPosts: CollectionEntry<'posts'>[] = await getPublishedPosts();
 
 const latestUpdate = allBlogPosts.reduce<Date | null>((latest, entry) => {
-  const updated = entry.data.updated || entry.data.date
-  return !latest || updated > latest ? updated : latest
-}, null)
+  const updated = entry.data.updated || entry.data.date;
+  return !latest || updated > latest ? updated : latest;
+}, null);
 
-const tagCountMap: Map<string, number> = new Map()
+const tagCountMap: Map<string, number> = new Map();
 
 allBlogPosts.map((post) => {
   const tags: string[] = Array.isArray(post.data.tags)
     ? post.data.tags
     : post.data.tags
       ? [post.data.tags]
-      : []
+      : [];
 
-  // 更新标签计数
   tags.forEach((tag) => {
     if (tagCountMap.has(tag)) {
-      tagCountMap.set(tag, tagCountMap.get(tag)! + 1)
+      tagCountMap.set(tag, tagCountMap.get(tag)! + 1);
     } else {
-      tagCountMap.set(tag, 1)
+      tagCountMap.set(tag, 1);
     }
-  })
+  });
 });
 ---
 
 <div class="profile-sidebar">
   <div class="profile-avatar">
-    <!-- <img src="/avatar.jpg" alt="你的昵称" class="avatar-img" /> -->
   </div>
   <h3 class="profile-name">{siteConfig.author.name}</h3>
   <p class="profile-intro">{intro}</p>
-
-  <!-- 社交链接 -->
-  <!-- <div class="profile-social">
-    <a href="https://github.com/xxx" aria-label="GitHub">🔗</a>
-    <a href="mailto:xxx@xxx.com" aria-label="邮箱">📧</a>
-  </div> -->
 
   <div class="profile-stats">
     <div class="stat-item">📝 {allBlogPosts.length} {t('sidebar.stats.posts')}</div>

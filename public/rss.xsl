@@ -102,14 +102,14 @@
             </h1>
             <p class="desc"><xsl:value-of select="/rss/channel/description"/></p>
             <div class="info">
-              这是一个 RSS 订阅源。你可以将当前页面的 URL 复制并粘贴到任意的 RSS 阅读器（如 NetNewsWire, Reeder, Inoreader）中来订阅本博客的最新文章。
+              This is an RSS feed. Copy the URL of this page into any RSS reader (such as NetNewsWire, Reeder, or Inoreader) to subscribe to the latest posts from this blog.
             </div>
             <p style="margin-top: 1rem; margin-bottom: 0;">
-              <a href="{/rss/channel/link}">← 返回博客首页</a>
+              <a href="{/rss/channel/link}">← Back to home</a>
             </p>
           </div>
 
-          <h2>最新文章</h2>
+          <h2>Latest posts</h2>
           <xsl:for-each select="/rss/channel/item">
             <div class="post-card">
               <h3 class="post-title">
@@ -118,7 +118,7 @@
                 </a>
               </h3>
               <div class="post-meta">
-                发布于：<xsl:value-of select="pubDate" />
+                Published: <xsl:value-of select="pubDate" />
               </div>
               <div class="post-desc">
                 <xsl:value-of select="description" />

@@ -1,29 +1,23 @@
 :root {
-  /* 主题主色 (放到前面以便后续引用) */
   --color-theme: #5e7eff;
   --color-theme-hover: #4d6eef;
 
-  /* 背景色 (融入了微弱的环境主题光) */
   --color-bg-primary: #ffffff;
   --color-bg-secondary: color-mix(in srgb, var(--color-theme) 2%, #f8f9fa);
   --color-bg-tertiary: color-mix(in srgb, var(--color-theme) 4%, #f1f1f1);
 
-  /* 文本色 (融入环境光，避免死黑/死灰) */
   --color-text-primary: color-mix(in srgb, var(--color-theme) 10%, #212529);
   --color-text-secondary: color-mix(in srgb, var(--color-theme) 8%, #5b5b5b);
   --color-text-muted: color-mix(in srgb, var(--color-theme) 6%, #6c757d);
 
-  /* 果冻半透明边框 */
   --color-border: color-mix(
     in srgb,
     var(--color-theme) 15%,
     rgba(0, 0, 0, 0.08)
   );
 
-  /* 阴影 */
   --color-shadow: rgba(0, 0, 0, 0.08);
 
-  /* 间距系统 */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
@@ -31,10 +25,9 @@
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
 
-  /* 字体系统 */
   --font-family-base:
-    "Nunito", "寒蝉全圆体", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, sans-serif;
+    "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
   --font-family-mono:
     "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
     monospace;
@@ -55,25 +48,21 @@
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
 
-  /* 圆角系统 */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-full: 9999px;
 
-  /* 阴影系统 */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
 
-  /* 过渡动画 */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
 
-  /* Z-index 层级 */
   --z-index-dropdown: 1000;
   --z-index-sticky: 1020;
   --z-index-fixed: 1030;
@@ -82,13 +71,11 @@
   --z-index-popover: 1060;
   --z-index-tooltip: 1070;
 
-  /* 断点 (用于 JS，CSS 中使用媒体查询) */
   --breakpoint-mobile: 640px;
   --breakpoint-tablet: 768px;
   --breakpoint-desktop: 968px;
   --breakpoint-wide: 1200px;
 
-  /* 颜色混合变量 - 基于 theme-color */
   --color-theme-mix-5: color-mix(in srgb, var(--theme-color) 5%, transparent);
   --color-theme-mix-10: color-mix(in srgb, var(--theme-color) 10%, transparent);
   --color-theme-mix-15: color-mix(in srgb, var(--theme-color) 15%, transparent);
@@ -100,7 +87,6 @@
     var(--text-secondary)
   );
 
-  /* 颜色混合变量 - 基于 primary-color */
   --color-primary-mix-15: color-mix(
     in srgb,
     var(--primary-color) 15%,
@@ -114,33 +100,26 @@
 }
 
 [data-theme="dark"] {
-  /* 颜色系统 - 暗色主题 */
-  /* 主题主色 (放到前面以便后续引用) */
   --color-theme: #ff9eb6;
   --color-theme-hover: #ff8aa8;
 
-  /* 背景色 (暗色模式混入主题色，告别死灰，呈现高级霓虹环境光) */
   --color-bg-primary: color-mix(in srgb, var(--color-theme) 3%, #121212);
   --color-bg-secondary: color-mix(in srgb, var(--color-theme) 5%, #1e1e1e);
   --color-bg-tertiary: color-mix(in srgb, var(--color-theme) 7%, #2d2d2d);
 
-  /* 文本色 (融入主题色温) */
   --color-text-primary: color-mix(in srgb, var(--color-theme) 8%, #e9ecef);
   --color-text-secondary: color-mix(in srgb, var(--color-theme) 12%, #cdcdcd);
   --color-text-muted: color-mix(in srgb, var(--color-theme) 15%, #adb5bd);
 
-  /* 果冻半透明边框 (暗色专属反光) */
   --color-border: color-mix(
     in srgb,
     var(--color-theme) 15%,
     rgba(255, 255, 255, 0.08)
   );
 
-  /* 阴影 */
   --color-shadow: rgba(0, 0, 0, 0.25);
 }
 
-/* 兼容旧变量名 */
 :root {
   --bg-primary: var(--color-bg-primary);
   --bg-secondary: var(--color-bg-secondary);

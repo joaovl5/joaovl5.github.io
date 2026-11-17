@@ -7,7 +7,7 @@ export function resolveCanonicalUrl(
   if (!candidate.trim()) return fallback;
   try {
     const resolved = new URL(candidate, base);
-    return resolved.protocol === "https:" || resolved.protocol === "http:"
+    return resolved.protocol === 'https:' || resolved.protocol === 'http:'
       ? resolved.href
       : fallback;
   } catch {

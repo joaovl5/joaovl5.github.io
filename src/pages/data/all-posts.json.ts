@@ -1,7 +1,7 @@
-import { type CollectionEntry } from "astro:content";
-import type { APIRoute } from "astro";
-import { getPublishedPosts } from "@/utils/content";
-import { getPostUrl } from "@/utils/helpers";
+import type { CollectionEntry } from 'astro:content';
+import type { APIRoute } from 'astro';
+import { getPublishedPosts } from '@/utils/content';
+import { getPostUrl } from '@/utils/helpers';
 
 interface PostData {
   id: string;
@@ -24,20 +24,17 @@ interface ApiResponse {
 }
 
 export const GET: APIRoute = async () => {
-  const allBlogPosts: CollectionEntry<"posts">[] = await getPublishedPosts();
+  const allBlogPosts: CollectionEntry<'posts'>[] = await getPublishedPosts();
 
-  // 用于统计标签的Map
   const tagCountMap: Map<string, number> = new Map();
 
   const postsData: PostData[] = allBlogPosts.map((post) => {
-    // 处理标签，确保是数组格式
     const tags: string[] = Array.isArray(post.data.tags)
       ? post.data.tags
       : post.data.tags
         ? [post.data.tags]
         : [];
 
-    // 更新标签计数
     tags.forEach((tag) => {
       if (tagCountMap.has(tag)) {
         tagCountMap.set(tag, tagCountMap.get(tag)! + 1);
@@ -53,7 +50,7 @@ export const GET: APIRoute = async () => {
       description: post.data.description,
       tags: tags,
       url: getPostUrl(post.id),
-      content: post.body || "",
+      content: post.body || '',
     };
   });
 
@@ -75,7 +72,7 @@ export const GET: APIRoute = async () => {
   return new Response(JSON.stringify(responseData), {
     status: 200,
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
 };

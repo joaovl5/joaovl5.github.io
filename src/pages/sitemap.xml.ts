@@ -1,15 +1,15 @@
-import type { APIRoute } from "astro";
-import { getPublishedPosts, groupPostsByDirectory } from "@/utils/content";
-import { siteConfig } from "@/config/site.config";
-import { buildUrl, getPostUrl, getTagUrl } from "@/utils/helpers";
+import type { APIRoute } from 'astro';
+import { siteConfig } from '@/config/site.config';
+import { getPublishedPosts, groupPostsByDirectory } from '@/utils/content';
+import { buildUrl, getPostUrl, getTagUrl } from '@/utils/helpers';
 
 function escapeXml(value: string): string {
   return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 }
 
 export const GET: APIRoute = async () => {
@@ -19,14 +19,14 @@ export const GET: APIRoute = async () => {
   const add = (path: string, updated?: Date) => {
     const url = new URL(path, origin);
     if (url.origin !== origin.origin) return;
-    url.hash = "";
-    url.search = "";
-    if (!url.pathname.endsWith("/") && !/\/[^/]+\.[^/]+$/.test(url.pathname))
-      url.pathname += "/";
+    url.hash = '';
+    url.search = '';
+    if (!url.pathname.endsWith('/') && !/\/[^/]+\.[^/]+$/.test(url.pathname))
+      url.pathname += '/';
     entries.set(url.href, updated);
   };
 
-  for (const path of ["", "timeline/", "about/", "links/"]) add(buildUrl(path));
+  for (const path of ['', 'timeline/', 'about/']) add(buildUrl(path));
   for (const item of siteConfig.navItems) add(buildUrl(item.href));
   for (const post of posts)
     add(getPostUrl(post.id), post.data.updated || post.data.date);
@@ -38,16 +38,16 @@ export const GET: APIRoute = async () => {
   const urls = Array.from(
     entries,
     ([url, updated]) => `  <url>
-    <loc>${escapeXml(url)}</loc>${updated ? `\n    <lastmod>${updated.toISOString()}</lastmod>` : ""}
+    <loc>${escapeXml(url)}</loc>${updated ? `\n    <lastmod>${updated.toISOString()}</lastmod>` : ''}
   </url>`,
-  ).join("\n");
+  ).join('\n');
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="${escapeXml(buildUrl("sitemap.xsl"))}"?>
+<?xml-stylesheet type="text/xsl" href="${escapeXml(buildUrl('sitemap.xsl'))}"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls}
 </urlset>`;
 
   return new Response(sitemap, {
-    headers: { "Content-Type": "application/xml; charset=utf-8" },
+    headers: { 'Content-Type': 'application/xml; charset=utf-8' },
   });
 };

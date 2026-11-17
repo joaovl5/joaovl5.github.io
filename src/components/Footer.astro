@@ -1,14 +1,13 @@
 ---
-import { siteConfig } from '@/config/site.config'
-import { t } from '@/utils/i18n'
-import { buildUrl } from '@/utils/helpers'
+import { siteConfig } from '@/config/site.config';
+import { buildUrl } from '@/utils/helpers';
+import { t } from '@/utils/i18n';
 
 const currentYear = new Date().getFullYear();
 ---
 
 <footer class="footer">
   <div class="footer-container">
-    <!-- 链接 -->
     <div class="footer-links">
       {
         siteConfig.socialLinks.map((link) => (
@@ -25,7 +24,6 @@ const currentYear = new Date().getFullYear();
       }
     </div>
 
-    <!-- 底部版权信息 -->
     <div class="footer-bottom">
       <p class="footer-description">
         {siteConfig.description}

@@ -1,93 +1,103 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { buildUrl, getPostUrl } from '@/utils/helpers';
-  import { t } from '@/utils/i18n';
-  import { breadcrumbDirectoryPath } from '@/scripts/breadcrumb';
+import { onMount } from 'svelte';
+import { breadcrumbDirectoryPath } from '@/scripts/breadcrumb';
+import { buildUrl, getPostUrl } from '@/utils/helpers';
+import { t } from '@/utils/i18n';
 
-  interface BreadcrumbItem {
-    label: string;
-    href: string;
+interface BreadcrumbItem {
+  label: string;
+  href: string;
+}
+
+interface DirectoryItem {
+  label: string;
+  type: 'directory' | 'file';
+  children?: Record<string, DirectoryItem>;
+}
+
+export let items: BreadcrumbItem[] = [];
+export let clientBuildUrl: ((paths: string[] | string) => string) | null = null;
+
+let directoryStructure: Record<string, DirectoryItem> = {};
+let activeDropdownIndex: number | null = null;
+let isDirectoryLoaded = false;
+let directoryError = false;
+let breadcrumb: HTMLElement;
+let activeButton: HTMLButtonElement | null = null;
+
+const safeBuildUrl = (paths: string[] | string): string =>
+  (clientBuildUrl || buildUrl)(paths);
+
+function computeChildren(
+  item: BreadcrumbItem,
+  structure: Record<string, DirectoryItem>,
+  makeUrl: (paths: string[] | string) => string,
+): BreadcrumbItem[] {
+  const path = breadcrumbDirectoryPath(item.href, makeUrl('posts'));
+  const pathParts = path.split('/').filter(Boolean);
+  let current: Record<string, DirectoryItem> | undefined = structure;
+  for (const part of pathParts) {
+    if (current?.[part]?.type !== 'directory') return [];
+    current = current[part].children;
   }
-
-  interface DirectoryItem {
-    label: string;
-    type: 'directory' | 'file';
-    children?: Record<string, DirectoryItem>;
-  }
-
-  export let items: BreadcrumbItem[] = [];
-  export let clientBuildUrl: ((paths: string[] | string) => string) | null = null;
-
-  let directoryStructure: Record<string, DirectoryItem> = {};
-  let activeDropdownIndex: number | null = null;
-  let isDirectoryLoaded = false;
-  let directoryError = false;
-  let breadcrumb: HTMLElement;
-  let activeButton: HTMLButtonElement | null = null;
-
-  const safeBuildUrl = (paths: string[] | string): string => (clientBuildUrl || buildUrl)(paths);
-
-  function computeChildren(
-    item: BreadcrumbItem,
-    structure: Record<string, DirectoryItem>,
-    makeUrl: (paths: string[] | string) => string
-  ): BreadcrumbItem[] {
-    const path = breadcrumbDirectoryPath(item.href, makeUrl('posts'));
-    const pathParts = path.split('/').filter(Boolean);
-    let current: Record<string, DirectoryItem> | undefined = structure;
-    for (const part of pathParts) {
-      if (current?.[part]?.type !== 'directory') return [];
-      current = current[part].children;
-    }
-    return Object.entries(current || {}).map(([key, value]) => ({
-      label: value.label,
-      href: makeUrl === buildUrl
+  return Object.entries(current || {}).map(([key, value]) => ({
+    label: value.label,
+    href:
+      makeUrl === buildUrl
         ? getPostUrl([...pathParts, key].join('/'))
-        : makeUrl(['posts', ...pathParts, key])
-    }));
-  }
+        : makeUrl(['posts', ...pathParts, key]),
+  }));
+}
 
-  $: childrenCache = new Map(items.map(item => [item.href, computeChildren(item, directoryStructure, clientBuildUrl || buildUrl)]));
+$: childrenCache = new Map(
+  items.map((item) => [
+    item.href,
+    computeChildren(item, directoryStructure, clientBuildUrl || buildUrl),
+  ]),
+);
 
-  function toggleDropdown(index: number, event: MouseEvent) {
-    activeDropdownIndex = activeDropdownIndex === index ? null : index;
-    activeButton = event.currentTarget as HTMLButtonElement;
-  }
+function toggleDropdown(index: number, event: MouseEvent) {
+  activeDropdownIndex = activeDropdownIndex === index ? null : index;
+  activeButton = event.currentTarget as HTMLButtonElement;
+}
 
-  onMount(() => {
-    const controller = new AbortController();
-    const closeOutside = (event: MouseEvent) => {
-      if (event.target instanceof Node && !breadcrumb.contains(event.target)) activeDropdownIndex = null;
-    };
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && activeDropdownIndex !== null) {
-        activeDropdownIndex = null;
-        activeButton?.focus();
+onMount(() => {
+  const controller = new AbortController();
+  const closeOutside = (event: MouseEvent) => {
+    if (event.target instanceof Node && !breadcrumb.contains(event.target))
+      activeDropdownIndex = null;
+  };
+  const closeOnEscape = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && activeDropdownIndex !== null) {
+      activeDropdownIndex = null;
+      activeButton?.focus();
+    }
+  };
+  document.addEventListener('click', closeOutside);
+  document.addEventListener('keydown', closeOnEscape);
+  void (async () => {
+    try {
+      const response = await fetch(safeBuildUrl('data/dir-data.json'), {
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error(`Directory HTTP ${response.status}`);
+      const structure = await response.json();
+      if (controller.signal.aborted) return;
+      directoryStructure = structure;
+      isDirectoryLoaded = true;
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        directoryError = true;
+        console.error('Failed to load directory structure:', error);
       }
-    };
-    document.addEventListener('click', closeOutside);
-    document.addEventListener('keydown', closeOnEscape);
-    void (async () => {
-      try {
-        const response = await fetch(safeBuildUrl('data/dir-data.json'), { signal: controller.signal });
-        if (!response.ok) throw new Error(`Directory HTTP ${response.status}`);
-        const structure = await response.json();
-        if (controller.signal.aborted) return;
-        directoryStructure = structure;
-        isDirectoryLoaded = true;
-      } catch (error) {
-        if (!controller.signal.aborted) {
-          directoryError = true;
-          console.error('加载目录结构失败：', error);
-        }
-      }
-    })();
-    return () => {
-      controller.abort();
-      document.removeEventListener('click', closeOutside);
-      document.removeEventListener('keydown', closeOnEscape);
-    };
-  });
+    }
+  })();
+  return () => {
+    controller.abort();
+    document.removeEventListener('click', closeOutside);
+    document.removeEventListener('keydown', closeOnEscape);
+  };
+});
 </script>
 
 <nav bind:this={breadcrumb} class="breadcrumb" aria-label={t('common.breadcrumb.label')}>

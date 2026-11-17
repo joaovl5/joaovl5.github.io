@@ -1,16 +1,16 @@
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { remark } from "remark";
-import { visit } from "unist-util-visit";
-import { loadPostEntries, resolveLocalPostId } from "./post-paths.mjs";
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { remark } from 'remark';
+import { visit } from 'unist-util-visit';
+import { loadPostEntries, resolveLocalPostId } from './post-paths.mjs';
 
-const root = fileURLToPath(new URL("../", import.meta.url));
+const root = fileURLToPath(new URL('../', import.meta.url));
 
 export function buildBacklinks({
-  postsDir = path.join(root, "src/posts"),
-  outputFile = path.join(root, ".cache/backlinks.json"),
-  base = "",
+  postsDir = path.join(root, 'src/posts'),
+  outputFile = path.join(root, '.cache/backlinks.json'),
+  base = '',
 } = {}) {
   const entries = loadPostEntries(postsDir).filter((entry) => !entry.draft);
   const postIdMap = new Map(entries.map(({ filePath, id }) => [filePath, id]));
@@ -19,15 +19,15 @@ export function buildBacklinks({
   for (const { filePath, id: sourceId, content } of entries) {
     const tree = remark.parse(content);
     const definitions = new Map();
-    visit(tree, "definition", (node) => {
+    visit(tree, 'definition', (node) => {
       if (!definitions.has(node.identifier))
         definitions.set(node.identifier, node.url);
     });
     visit(tree, (node) => {
       const url =
-        node.type === "link"
+        node.type === 'link'
           ? node.url
-          : node.type === "linkReference"
+          : node.type === 'linkReference'
             ? definitions.get(node.identifier)
             : null;
       if (!url) return;
@@ -64,7 +64,7 @@ if (
 ) {
   try {
     const { siteConfig } = await import(
-      new URL("../src/config/site.config.ts", import.meta.url)
+      new URL('../src/config/site.config.ts', import.meta.url)
     );
     const data = buildBacklinks({ base: siteConfig.base });
     console.log(`Generated backlinks for ${Object.keys(data).length} articles`);

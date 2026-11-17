@@ -1,13 +1,13 @@
-import rss from "@astrojs/rss";
-import type { APIRoute } from "astro";
-import { getPublishedPosts } from "@/utils/content";
-import { siteConfig } from "@/config/site.config";
-import { getLocale } from "@/config/i18n.config";
+import rss from '@astrojs/rss';
+import type { APIRoute } from 'astro';
+import { getLocale } from '@/config/i18n.config';
+import { siteConfig } from '@/config/site.config';
+import { getPublishedPosts } from '@/utils/content';
 import {
   buildUrl,
   extractExcerptFromMarkdown,
   getPostUrl,
-} from "@/utils/helpers";
+} from '@/utils/helpers';
 
 export const GET: APIRoute = async (context) => {
   const blog = (await getPublishedPosts()).sort(
@@ -17,17 +17,17 @@ export const GET: APIRoute = async (context) => {
     title: siteConfig.name,
     description: siteConfig.description,
     site: new URL(
-      buildUrl(""),
+      buildUrl(''),
       context.site || siteConfig.site || siteConfig.url,
     ),
     items: blog.map((post) => ({
       title: post.data.title,
       pubDate: post.data.date,
       description:
-        post.data.description || extractExcerptFromMarkdown(post.body || ""),
+        post.data.description || extractExcerptFromMarkdown(post.body || ''),
       link: getPostUrl(post.id),
     })),
     customData: `<language>${getLocale(siteConfig.locale).toLowerCase()}</language>`,
-    stylesheet: buildUrl("rss.xsl"),
+    stylesheet: buildUrl('rss.xsl'),
   });
 };
