@@ -26,6 +26,7 @@ interface Props {
   post?: PostEntry | null;
   structuredData?: StructuredData | null;
   description?: string;
+  sidebar?: boolean;
 }
 
 let {
@@ -36,6 +37,7 @@ let {
   post = null,
   structuredData = null,
   description = siteConfig.description,
+  sidebar = true,
 } = Astro.props as Props;
 
 if (postFrontmatter?.description) {
@@ -58,6 +60,10 @@ if (postFrontmatter?.title) {
   pageTitle = `${postFrontmatter.title} | ${siteConfig.name}`;
 }
 
+// The header reveals this on scroll. The site-name suffix belongs to the
+// document <title> only, not the in-page header.
+const headerTitle = postFrontmatter?.title ?? pageTitle;
+
 const isHome = isHomePage(Astro.url.pathname);
 ---
 
@@ -69,7 +75,7 @@ const isHome = isHomePage(Astro.url.pathname);
     ogImage={ogImage}
     canonicalUrl={canonicalUrl}
     structuredData={structuredData}
-    isArticle={isPostsPage}
+    isArticle={!!post}
   />
 
   <body>
@@ -137,24 +143,26 @@ const isHome = isHomePage(Astro.url.pathname);
         }
       }
     </style>
-    <Header pageTitle={pageTitle} />
-    {isHome && <div class="yarare-hero cg" >
-    </div>}
+    <Header pageTitle={headerTitle} />
+      {isHome &&
+      <div class="yarare-hero cg" ></div>}
     <div style="" class="content-container">
       <main class="main-content">
         <slot />
       </main>
-      <aside>
-        <div
-          class="blog-post-sidebar"
-          style={isPostsPage ? 'position: static' : ';'}
-        >
-          <Sidebar post={post}/>
-        </div>
-        <div class="blog-post-sidebar">
-          <slot name="aside" />
-        </div>
-      </aside>
+      {sidebar && (
+        <aside>
+          <div
+            class="blog-post-sidebar"
+            style={isPostsPage ? 'position: static' : ';'}
+          >
+            <Sidebar post={post}/>
+          </div>
+          <div class="blog-post-sidebar">
+            <slot name="aside" />
+          </div>
+        </aside>
+      )}
     </div>
     <slot name="bottom" />
     <Footer />

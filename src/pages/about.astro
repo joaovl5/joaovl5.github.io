@@ -1,8 +1,10 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { siteConfig } from '@/config/site.config';
 import '@/styles/global.css';
 
 const pageTitle = 'About';
+const { name: authorName, slugId } = siteConfig.author;
 ---
 
 <BaseLayout pageTitle={pageTitle}>
@@ -10,15 +12,11 @@ const pageTitle = 'About';
     <!-- Header -->
     <header class="about-hero">
       <div class="ambient-glow"></div>
-      <h1 class="title">Your Name <span class="sub-title">/ your-id</span></h1>
-      <p class="tagline">A short and catchy tagline.</p>
+      <h1 class="title">{authorName} <span class="sub-title">/ {slugId}</span></h1>
+      <p class="tagline">I don't know how to write catchy taglines.</p>
       <p class="poetic-intro">
-        "A poetic intro or a quote you like."
-      </p>
-      <p class="poetic-intro2">
-        Some more text about yourself or your site. <br/>
-        You can write multiple lines here. <br/>
-        Enjoy building your site!
+      "Always code as if the guy who ends up maintaining your code will be a
+      violent psychopath who knows where you live." — Rick Osborne
       </p>
     </header>
 
@@ -27,52 +25,38 @@ const pageTitle = 'About';
 
       <section class="about-section">
         <p>
-          This is an example about page for the Pudding theme.
+        I'm João Pedro, currently based in São Paulo, Brazil, while working
+        remotely as a Software Engineer! Depending on whether you're a
+        glass "half-full" or "half-empty" person, my biggest strength or
+        weakness is having a lot of interests. My best work comes from seemingly
+        farfetched connections being drawn to form robust solutions.
         </p>
         <p>
-          You can write your personal introduction here. The layout provides multiple sections and styled components like lists and blockquotes to make your content look elegant.
+        My stronger sides are in Python, Applied AI/ML, and back-end in general,
+        with lots of interest in DevOps, Functional Programming, and Rust. As a
+        hobby, I maintain a personal infrastructure (popularly called a
+        "home-lab") where I develop much of these skills, especially in Nix and
+        Infrastructure-as-Code.
+        </p>
+        <p>
+        More niche interests of mine include enjoying Lisps, particularly ones
+        deriving from Clojure. My Neovim configuration is written in Fennel, a
+        Lisp that compiles to Lua. The programming language I'm working on,
+        called <a href="https://github.com/joaovl5/winter">Winter</a>, is a Lisp
+        that compiles to Nix, with some quality-of-life improvements over the
+        Nix language, and more soon to come such as a type system.
+        </p>
+        <p>
+        Outside of tech, I enjoy reading and writing. Part of it
+        being technical articles and what not, and another part being
+        weird stories like <a href="https://www.goodreads.com/book/show/54870256-there-is-no-antimemetics-division">
+          "There is No Antimemetics Division"</a>. I'm also into gaming! As of
+        writing this, I've been playing <a href="https://store.steampowered.com/app/3669870/CONTROL_Resonant/">"CONTROL Resonant"</a>,
+        and I'm having a blast, highly recommend for those into surrealist
+        visuals and a great, albeit very weird, story.
         </p>
       </section>
-
-      <div class="divider">· · ·</div>
-
-      <section class="about-section">
-        <p>
-          Here is how you can use different text styles:
-        </p>
-        <p>
-          <span class="list-label">1.</span>
-          First item with a <a href="#" class="preview-link">preview link</a> style.
-        </p>
-        <p>
-          <span class="list-label">2.</span>
-          Second item.
-        </p>
-        <p class="aside-block">
-          This is an aside block. You can use it for notes, quotes, or additional context.
-        </p>
-      </section>
-
-      <div class="divider">· · ·</div>
-
-      <section class="about-section">
-        <h2>Technologies / Tools</h2>
-        <div class="tags-container">
-          <span class="tool-tag">Astro</span>
-          <span class="tool-tag">Vue.js</span>
-          <span class="tool-tag">TypeScript</span>
-        </div>
-      </section>
-
     </div>
-
-    <!-- Footer -->
-    <footer class="about-footer">
-      <p>
-        This blog is built with the <a href="https://github.com/huamurui/pudding" class="theme-link">Pudding</a> theme.
-      </p>
-      <p class="copyright">© 2026 Your Name. Made with 🤍 and lots of daydreaming.</p>
-    </footer>
   </article>
 
   <style>
@@ -136,7 +120,7 @@ const pageTitle = 'About';
       font-size: var(--font-size-base);
       font-style: italic;
       color: var(--text-secondary);
-      max-width: 520px;
+      max-width: 620px;
       margin: var(--spacing-md) auto 0;
       line-height: var(--line-height-relaxed);
     }

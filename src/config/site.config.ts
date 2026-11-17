@@ -7,6 +7,7 @@ export interface SiteConfig {
   keywords: Array<string>;
   author: {
     name: string;
+    slugId: string;
     email?: string;
     github?: string;
     avatar?: string;
@@ -35,35 +36,37 @@ export interface SiteConfig {
 }
 
 export const siteConfig: SiteConfig = {
-  name: 'João Pedro',
-  description: 'My personal page with my portfolio and articles.',
-  url: 'https://joaovl5.github.io',
-  site: 'https://joaovl5.github.io',
-  base: '/',
-  keywords: ['astro', 'blog', 'portfolio', 'pudding'],
+  name: "João Pedro",
+  description: "Personal page with my portfolio and articles.",
+  url: "https://joaovl5.github.io",
+  site: "https://joaovl5.github.io",
+  base: "/",
+  keywords: ["astro", "blog", "portfolio", "pudding"],
   author: {
-    name: 'João Pedro',
-    email: 'vieiraleao2005@gmail.com',
-    github: 'https://github.com/joaovl5',
+    name: "João Pedro",
+    slugId: "joaovl5",
+    email: "vieiraleao2005@gmail.com",
+    github: "https://github.com/joaovl5",
   },
   navItems: [
-    { href: './', labelKey: 'home', label: 'home' },
-    { href: './timeline/', labelKey: 'timeline', label: 'timeline' },
-    { href: './about/', labelKey: 'about', label: 'about' },
+    { href: "./", labelKey: "home", label: "home" },
+    { href: "./posts/", labelKey: "posts", label: "posts" },
+    { href: "./timeline/", labelKey: "timeline", label: "timeline" },
+    { href: "./about/", labelKey: "about", label: "about" },
   ],
   socialLinks: [
-    { nameKey: 'social.github', href: 'https://github.com/joaovl5' },
-    { nameKey: 'social.email', href: 'mailto:vieiraleao2005@gmail.com' },
-    { nameKey: 'social.rss', href: './rss.xml' },
-    { nameKey: 'social.sitemap', href: './sitemap.xml' },
+    { nameKey: "social.github", href: "https://github.com/joaovl5" },
+    { nameKey: "social.email", href: "mailto:vieiraleao2005@gmail.com" },
+    { nameKey: "social.rss", href: "./rss.xml" },
+    { nameKey: "social.sitemap", href: "./sitemap.xml" },
   ],
   theme: {
     light: {
-      primary: '#5e7eff',
+      primary: "#5e7eff",
     },
     dark: {
-      primary: '#ff9eb6',
+      primary: "#ff9eb6",
     },
   },
-  locale: 'en-US',
+  locale: "en-US",
 };

@@ -81,92 +81,93 @@ export interface I18nConfig {
 }
 
 export const i18nConfig = {
-  'en-US': {
+  "en-US": {
     common: {
-      brand: 'Pudding',
+      brand: "",
       search: {
-        placeholder: 'Search articles...',
-        loadError: 'Search data could not be loaded. Please try again later.',
-        noResults: 'No matching articles found',
-        resultCount: '{count} posts found',
-        loading: 'Loading full-text index...',
-        region: 'Article search',
+        placeholder: "Search articles...",
+        loadError: "Search data could not be loaded. Please try again later.",
+        noResults: "No matching articles found",
+        resultCount: "{count} posts found",
+        loading: "Loading full-text index...",
+        region: "Article search",
         ariaLabel: {
-          open: 'Open search box',
-          close: 'Close search box',
-          input: 'Enter keywords to search articles',
-          viewArticle: 'View article: {title}',
+          open: "Open search box",
+          close: "Close search box",
+          input: "Enter keywords to search articles",
+          viewArticle: "View article: {title}",
         },
       },
       menu: {
-        toggle: 'Toggle menu',
+        toggle: "Toggle menu",
       },
       posts: {
-        readingTime: 'min read',
-        noResults: 'No matching articles found',
-        count: 'posts',
-        pinned: 'Pinned',
+        readingTime: "min read",
+        noResults: "No matching articles found",
+        count: "posts",
+        pinned: "Pinned",
       },
       tags: {
-        count: 'posts',
+        count: "posts",
       },
       timeline: {
-        count: 'posts',
+        count: "posts",
       },
       category: {
-        count: 'posts',
+        count: "posts",
       },
       breadcrumb: {
-        loadError: 'Could not load items',
-        loading: 'Loading...',
-        empty: 'No items',
-        label: 'Breadcrumb',
-        children: 'View items under {label}',
+        loadError: "Could not load items",
+        loading: "Loading...",
+        empty: "No items",
+        label: "Breadcrumb",
+        children: "View items under {label}",
       },
-      backToTop: 'Back to top',
-      readingProgress: 'Reading progress',
+      backToTop: "Back to top",
+      readingProgress: "Reading progress",
       theme: {
-        light: 'light',
-        dark: 'dark',
-        label: '{current} theme active. Switch to {target} theme',
+        light: "light",
+        dark: "dark",
+        label: "{current} theme active. Switch to {target} theme",
       },
       toc: {
-        label: 'Table of contents',
-        quickLabel: 'Quick contents',
-        currentSection: 'Current section: {title}',
-        quickNavLabel: 'Go to section: {title}',
+        label: "Table of contents",
+        quickLabel: "Quick contents",
+        currentSection: "Current section: {title}",
+        quickNavLabel: "Go to section: {title}",
       },
     },
     header: {
       nav: {
-        home: 'Home',
-        timeline: 'Timeline',
-        about: 'About',
+        home: "Home",
+        posts: "Posts",
+        timeline: "Timeline",
+        about: "About",
       },
     },
     footer: {
-      copyright: '© {year} {author}. All rights reserved.',
-      poweredBy: 'Powered by',
+      copyright: "© {year} {author}. All rights reserved.",
+      poweredBy: "Powered by",
     },
     sidebar: {
       stats: {
-        posts: 'posts',
-        tags: 'tags',
-        updated: 'updated',
+        posts: "posts",
+        tags: "tags",
+        updated: "updated at",
       },
     },
     social: {
-      github: 'GitHub',
-      email: 'Email',
-      rss: 'RSS',
-      sitemap: 'Sitemap',
+      github: "GitHub",
+      email: "Email",
+      rss: "RSS",
+      sitemap: "Sitemap",
     },
   },
 } satisfies Record<string, I18nConfig>;
 
 export type SupportedLocale = keyof typeof i18nConfig;
 
-export const defaultLocale: SupportedLocale = 'en-US';
+export const defaultLocale: SupportedLocale = "en-US";
 
 export function getLocale(locale?: string): SupportedLocale {
   if (locale && Object.hasOwn(i18nConfig, locale)) {
@@ -181,12 +182,12 @@ export function t(
   params?: Record<string, string | number>,
 ): string {
   const config = i18nConfig[getLocale(locale)];
-  const keys = path.split('.');
+  const keys = path.split(".");
   let value: unknown = config;
 
   for (const key of keys) {
     if (
-      typeof value !== 'object' ||
+      typeof value !== "object" ||
       value === null ||
       !Object.hasOwn(value, key)
     ) {
@@ -198,7 +199,7 @@ export function t(
     value = (value as Record<string, unknown>)[key];
   }
 
-  if (typeof value !== 'string') return path;
+  if (typeof value !== "string") return path;
   if (!params) return value;
   return value.replace(
     /\{(\w+)\}/g,

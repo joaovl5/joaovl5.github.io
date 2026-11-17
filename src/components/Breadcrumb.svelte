@@ -1,4 +1,5 @@
 <script lang="ts">
+import ChevronRight from '@lucide/svelte/icons/chevron-right';
 import { onMount } from 'svelte';
 import { breadcrumbDirectoryPath } from '@/scripts/breadcrumb';
 import { buildUrl, getPostUrl } from '@/utils/helpers';
@@ -116,7 +117,7 @@ onMount(() => {
               on:click={(event) => toggleDropdown(index, event)}
             >
               <span class="breadcrumb-separator" aria-hidden="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <ChevronRight size={14} strokeWidth={2.5} />
               </span>
             </button>
             <div class="breadcrumb-dropdown" id={`breadcrumb-dropdown-${index}`} hidden={activeDropdownIndex !== index}>

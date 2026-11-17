@@ -46,7 +46,7 @@ $: postsArr = [...(typeof posts === 'function' ? posts() : posts || [])].sort(
               class="post-date"
               datetime={new Date(post.date).toISOString()}
             >
-              {formatDate(post.date)}
+              {formatDate(post.date, 'local')}
             </time>
           </a>
 

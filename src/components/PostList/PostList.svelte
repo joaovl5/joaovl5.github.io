@@ -1,5 +1,6 @@
 <script lang="ts">
 import {
+  formatDate,
   getPostUrl,
   getTagUrl,
   sanitizeViewTransitionName,
@@ -28,12 +29,7 @@ $: postsArr = posts;
         <div class="post-content">
           <div class="post-info">
             <time class="post-date" datetime={new Date(post.data.date).toISOString()}>
-              {new Date(post.data.date)
-                .toISOString()
-                .split("T")[0]
-                .split("-")
-                .slice(1)
-                .join("-")}
+              {formatDate(post.data.date, 'month-day')}
             </time>
 
             <div class="timeline-connector">

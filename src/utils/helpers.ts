@@ -78,9 +78,25 @@ export function countWords(content: string): number {
   return chineseCharCount + englishWordCount;
 }
 
+function ordinalSuffix(day: number): string {
+  const mod100 = day % 100;
+  if (mod100 >= 11 && mod100 <= 13) return 'th';
+
+  switch (day % 10) {
+    case 1:
+      return 'st';
+    case 2:
+      return 'nd';
+    case 3:
+      return 'rd';
+    default:
+      return 'th';
+  }
+}
+
 export function formatDate(
   date: Date | string,
-  format: 'iso' | 'local' = 'iso',
+  format: 'iso' | 'local' | 'month-day' = 'iso',
 ): string {
   const d = typeof date === 'string' ? new Date(date) : date;
 
@@ -88,11 +104,17 @@ export function formatDate(
     return d.toISOString().split('T')[0];
   }
 
-  return d.toLocaleDateString('en-US', {
-    year: 'numeric',
+  // Content dates are authored as calendar dates, so read them in UTC to keep
+  // the day from shifting in negative-offset timezones.
+  const month = d.toLocaleDateString('en-US', {
     month: 'long',
-    day: 'numeric',
+    timeZone: 'UTC',
   });
+  const day = `${d.getUTCDate()}${ordinalSuffix(d.getUTCDate())}`;
+
+  return format === 'month-day'
+    ? `${month} ${day}`
+    : `${month} ${day}, ${d.getUTCFullYear()}`;
 }
 
 export function getPostUrl(

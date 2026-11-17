@@ -25,9 +25,6 @@ const currentYear = new Date().getFullYear();
     </div>
 
     <div class="footer-bottom">
-      <p class="footer-description">
-        {siteConfig.description}
-      </p>
       <p class="copyright">
         {t('footer.copyright', { year: currentYear, author: siteConfig.author.name })}
       </p>
@@ -59,12 +56,6 @@ const currentYear = new Date().getFullYear();
     margin: 0 auto;
     padding: 1rem;
     text-align: center;
-  }
-
-  .footer-description {
-    line-height: 1.5;
-    max-width: 600px;
-    margin: 0.5rem auto;
   }
 
   .footer-links {

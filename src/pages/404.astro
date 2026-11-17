@@ -6,23 +6,11 @@ import { t } from '@/utils/i18n';
 
 <BaseLayout pageTitle="404 - Not Found">
   <div class="error-container">
-    <div class="pudding-wrapper">
-      <svg class="pudding" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <!-- Pudding Body -->
-        <path d="M20,80 Q20,40 50,40 Q80,40 80,80" fill="var(--primary-color)" />
-        <!-- Pudding Top -->
-        <circle cx="50" cy="45" r="15" fill="color-mix(in srgb, var(--primary-color) 80%, black)" />
-        <!-- Face -->
-        <circle cx="40" cy="65" r="3" fill="white" />
-        <circle cx="60" cy="65" r="3" fill="white" />
-        <path d="M45,72 Q50,75 55,72" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" />
-      </svg>
-      <div class="pudding-shadow"></div>
-    </div>
-
     <h1 class="error-code">404</h1>
-    <p class="error-message">Oops — the pudding got eaten and this page is gone.</p>
-
+    <p class="error-message">
+      Oops — The page you were looking for might have been eaten by an eldritch
+      monster!
+    </p>
     <a href={buildUrl('')} class="home-button">
       Back home
     </a>
@@ -40,54 +28,15 @@ import { t } from '@/utils/i18n';
     padding: 2rem;
   }
 
-  .pudding-wrapper {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    margin-bottom: 2rem;
-  }
-
-  .pudding {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 10px 20px rgba(var(--primary-color-rgb), 0.2));
-    animation: jellyBounce 2s infinite ease-in-out;
-    transform-origin: bottom center;
-  }
-
-  .pudding-shadow {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 10px;
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 50%;
-    filter: blur(4px);
-    animation: shadowScale 2s infinite ease-in-out;
-  }
-
-  @keyframes jellyBounce {
-    0%, 100% { transform: scale(1, 1) translateY(0); }
-    30% { transform: scale(1.1, 0.9) translateY(0); }
-    50% { transform: scale(0.9, 1.1) translateY(-40px); }
-    70% { transform: scale(1.05, 0.95) translateY(0); }
-  }
-
-  @keyframes shadowScale {
-    0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.3; }
-    50% { transform: translateX(-50%) scale(0.5); opacity: 0.1; }
-  }
-
   .error-code {
     font-size: 6rem;
     font-weight: 900;
     margin: 0;
-    background: linear-gradient(135deg, var(--primary-color), var(--color-theme-hover));
+    background-image: linear-gradient(135deg, var(--theme-color), var(--color-theme-hover));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
-    opacity: 0.2;
+    color: var(--theme-color);
     line-height: 1;
   }
 

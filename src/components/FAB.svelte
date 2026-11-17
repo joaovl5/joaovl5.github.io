@@ -1,4 +1,5 @@
 <script lang="ts">
+import ChevronUp from '@lucide/svelte/icons/chevron-up';
 import { onMount } from 'svelte';
 import { t } from '@/utils/i18n';
 
@@ -51,9 +52,7 @@ const fabPosition = { ...defaultPosition, ...position };
   aria-hidden={!isVisible}
   aria-label={t('common.backToTop')}
 >
-  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M18 15l-6-6-6 6"/>
-  </svg>
+  <ChevronUp class="icon" size={20} strokeWidth={3} />
 </button>
 
 <style>

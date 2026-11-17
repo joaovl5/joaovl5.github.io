@@ -1,4 +1,5 @@
 ---
+import { FileText, Tag as TagIcon } from '@lucide/astro';
 import type { CollectionEntry } from 'astro:content';
 import { siteConfig } from '@/config/site.config';
 import type { PostEntry } from '@/types';
@@ -47,11 +48,12 @@ allBlogPosts.map((post) => {
   <p class="profile-intro">{intro}</p>
 
   <div class="profile-stats">
-    <div class="stat-item">📝 {allBlogPosts.length} {t('sidebar.stats.posts')}</div>
-    <div class="stat-item">🏷️ {Array.from(tagCountMap).length} {t('sidebar.stats.tags')}</div>
+    <div class="stat-item"><FileText size={16} stroke-width={2} aria-hidden="true" /> {allBlogPosts.length} {t('sidebar.stats.posts')}</div>
+    <div class="stat-item"><TagIcon size={16} stroke-width={2} aria-hidden="true" /> {Array.from(tagCountMap).length} {t('sidebar.stats.tags')}</div>
     <div class="stat-item">
-      {latestUpdate ? formatDate(latestUpdate) : '—'}
-      {t('sidebar.stats.updated')}
+      {latestUpdate
+        ? `${t('sidebar.stats.updated')} ${formatDate(latestUpdate, 'local')}`
+        : '—'}
     </div>
   </div>
   <Tag post={post} />
@@ -71,5 +73,11 @@ allBlogPosts.map((post) => {
     height: 80px;
     border-radius: 80px;
     object-fit: cover;
+  }
+  .stat-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
   }
 </style>

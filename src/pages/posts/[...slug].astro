@@ -118,7 +118,7 @@ const customTransition = { forwards: anim, backwards: anim };
             class="post-date"
             datetime={new Date(post.data.date).toISOString()}
           >
-            {formatDate(post.data.date)}
+            {formatDate(post.data.date, 'local')}
           </time>
           <span class="meta-separator">•</span>
           <span class="reading-time">
@@ -332,22 +332,6 @@ const customTransition = { forwards: anim, backwards: anim };
   .backlinks-section {
     margin-top: 2rem;
   }
-
-  .backlinks-title {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 2rem;
-  }
-
-  .backlink-icon {
-    color: var(--theme-color);
-    opacity: 0.8;
-  }
-
 
   @media (max-width: 968px) {
     .blog-post-container {
