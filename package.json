@@ -1,0 +1,28 @@
+{
+  "name": "joaovl5.github.io",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.21.0",
+      "onFail": "download"
+    }
+  },
+  "dependencies": {
+    "@astrojs/language-server": "^2.17.3",
+    "astro": "^5.16.5"
+  },
+  "packageManager": "pnpm@12.21.0",
+  "type": "module"
+}

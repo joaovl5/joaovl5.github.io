@@ -1,0 +1,4 @@
+.direnv/
+.astro/
+dist
+node_modules/
