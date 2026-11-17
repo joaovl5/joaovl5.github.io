@@ -1,0 +1,115 @@
+---
+import { type CollectionEntry } from 'astro:content'
+import { getPublishedPosts } from '@/utils/content'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import PostList from '@/components/PostList/PostList.svelte'
+import '@/components/PostList/PostList.css'
+import { t } from '@/utils/i18n'
+import { getTagRoutePath } from '@/utils/helpers'
+type StaticPath = {
+  params: {
+    tag: string;
+  };
+  props: {
+    tag: string;
+    posts: CollectionEntry<'posts'>[];
+  };
+};
+
+export async function getStaticPaths(): Promise<StaticPath[]> {
+  const posts = await getPublishedPosts()
+  const tags = new Map<string, CollectionEntry<'posts'>[]>()
+
+  for (const post of posts) {
+    for (const tag of post.data.tags || []) {
+      if (!tags.has(tag)) {
+        tags.set(tag, [])
+      }
+      tags.get(tag)!.push(post)
+    }
+  }
+
+  return Array.from(tags.entries()).map(
+    ([tag, posts]): StaticPath => ({
+      params: { tag: getTagRoutePath(tag) },
+      props: { tag, posts: posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime()) }
+    })
+  )
+}
+
+// 定义页面属性类型
+interface Props {
+  tag: string;
+  posts: CollectionEntry<'posts'>[];
+}
+
+const { tag, posts } = Astro.props as Props;
+---
+
+<BaseLayout pageTitle={`Tag ⬝ ${tag}`} description={`Posts tagged with ${tag}`}>
+  <div style={{ 'max-width': '800px', margin: '100px auto' }}>
+    <section class="year-section">
+      <div class="year-posts">
+        <article class="timeline-post">
+          <div class="post-content">
+            <div class="post-info year">
+              <span class="post-date year">{tag}</span>
+              <div class="timeline-connector year">
+                <div class="post-marker year"></div>
+              </div>
+              <span class="inline-tag">{posts.length} {t('common.tags.count')}</span>
+            </div>
+          </div>
+        </article>
+        <PostList posts={posts} />
+      </div>
+    </section>
+  </div>
+  <style>
+    .inline-tag {
+      display: inline-block;
+      background-color: var(--color-accent);
+      color: var(--color-on-accent);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      margin-left: 12px;
+    }
+
+    .post-info.year:hover {
+      background-color: transparent;
+    }
+
+    .post-date.year {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .timeline-connector.year::before {
+      display: none;
+    }
+
+    .post-marker.year {
+      transform: scale(1.5);
+      background-color: var(--theme-color);
+    }
+
+    .post-info:hover .post-marker.year {
+      width: 6px;
+      height: 6px;
+      transform: scale(2);
+      background-color: var(--theme-color);
+    }
+
+    @media (max-width: 600px) {
+      .timeline-container {
+        padding-left: 30px;
+      }
+
+      .year-section::before,
+      .year-marker::before {
+        left: -20px;
+      }
+    }
+  </style>
+</BaseLayout>

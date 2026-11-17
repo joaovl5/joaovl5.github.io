@@ -1,3 +1,6 @@
+packages:
+  - '.'
+storeDir: node_modules/.pnpm-store
 allowBuilds:
   esbuild: true
   sharp: true

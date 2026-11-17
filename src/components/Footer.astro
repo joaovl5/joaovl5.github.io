@@ -1,0 +1,115 @@
+---
+import { siteConfig } from '@/config/site.config'
+import { t } from '@/utils/i18n'
+import { buildUrl } from '@/utils/helpers'
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer-container">
+    <!-- 链接 -->
+    <div class="footer-links">
+      {
+        siteConfig.socialLinks.map((link) => (
+          <a
+            href={buildUrl(link.href)}
+            class="nav-link footer-link"
+            aria-label={t(link.nameKey)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>{t(link.nameKey)}</span>
+          </a>
+        ))
+      }
+    </div>
+
+    <!-- 底部版权信息 -->
+    <div class="footer-bottom">
+      <p class="footer-description">
+        {siteConfig.description}
+      </p>
+      <p class="copyright">
+        {t('footer.copyright', { year: currentYear, author: siteConfig.author.name })}
+      </p>
+      <p class="credit">
+        {t('footer.poweredBy')} <a
+          href="https://astro.build/"
+          class="nav-link footer-link"
+          target="_blank"
+          rel="noopener noreferrer">Astro</a
+        > and <a
+          href="https://github.com/huamurui/pudding"
+          class="nav-link footer-link"
+          target="_blank"
+          rel="noopener noreferrer">Pudding</a
+        > .
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: 1rem;
+  }
+
+  .footer-container {
+    border-top: 1px dashed var(--border-color);
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .footer-description {
+    line-height: 1.5;
+    max-width: 600px;
+    margin: 0.5rem auto;
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .footer-link {
+    text-decoration: none;
+    transition: color 0.2s ease;
+    text-decoration: underline;
+  }
+
+  .copyright {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .credit {
+    margin: 0;
+  }
+
+  @media (max-width: 600px) {
+    .footer-links {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .footer-bottom {
+      font-size: 0.8rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .social-link {
+      transition: none;
+    }
+
+    .social-link:hover {
+      transform: none;
+    }
+  }
+</style>

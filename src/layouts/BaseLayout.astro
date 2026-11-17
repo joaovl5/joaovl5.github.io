@@ -1,0 +1,175 @@
+---
+import '@/styles/tokens.css'
+import '@/styles/global.css'
+import '@/styles/md.css'
+import '@/styles/link-card.css'
+import '@/styles/code.css'
+import '@/styles/preview.css'
+import 'overlayscrollbars/styles/overlayscrollbars.css'
+import { siteConfig } from '@/config/site.config'
+import { isPostPage, isHomePage, buildUrl } from '@/utils/helpers'
+import type { PostFrontmatter, PostEntry, StructuredData } from '@/types'
+import Head from '@/components/Head.astro'
+import Header from '@/components/Header.astro'
+import Footer from '@/components/Footer.astro'
+import FAB from '@/components/FAB.svelte'
+import Sidebar from '@/components/Sidebar.astro'
+import { resolveCanonicalUrl } from '@/scripts/canonical'
+
+// 判断是否为文章页面
+const isPostsPage = isPostPage(Astro.url.pathname)
+
+interface Props {
+  pageTitle?: string;
+  postFrontmatter?: PostFrontmatter | null;
+  ogImage?: string;
+  canonicalUrl?: string;
+  post?: PostEntry | null;
+  structuredData?: StructuredData | null;
+  description?: string;
+}
+
+let {
+  pageTitle = siteConfig.name,
+  postFrontmatter = null,
+  ogImage = '',
+  canonicalUrl = Astro.url.href,
+  post = null,
+  structuredData = null,
+  description = siteConfig.description
+} = Astro.props as Props
+
+if (postFrontmatter?.description) {
+  // Override default description with post-specific one
+  // and erase any HTML tags
+  description = postFrontmatter.description.replace(/<[^>]*>/g, '')
+}
+if (postFrontmatter?.image?.url) {
+  ogImage = postFrontmatter.image.url
+}
+if (postFrontmatter?.url) {
+  const siteRoot = new URL(buildUrl(''), Astro.site || Astro.url.origin)
+  canonicalUrl = resolveCanonicalUrl(postFrontmatter.url, siteRoot, canonicalUrl)
+}
+if (postFrontmatter?.title) {
+  pageTitle = `${postFrontmatter.title} | ${siteConfig.name}`
+}
+
+const isHome = isHomePage(Astro.url.pathname);
+---
+
+<!DOCTYPE html>
+<html lang={siteConfig.locale}>
+  <Head
+    pageTitle={pageTitle}
+    description={description}
+    ogImage={ogImage}
+    canonicalUrl={canonicalUrl}
+    structuredData={structuredData}
+    needGiscus={isPostsPage}
+  />
+
+  <body>
+    <style>
+      /* View transition keyframes for title morphing */
+      @keyframes title-old {
+        0% { opacity: 1; transform: none; }
+        100% { opacity: 0; transform: translateY(-6px) scale(0.85); }
+      }
+      @keyframes title-new {
+        0% { opacity: 0; transform: translateY(6px) scale(0.85); }
+        100% { opacity: 1; transform: none; }
+      }
+
+      .main-content {
+        flex: 1;
+        max-width: 800px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      /* Make titles behave better during view transitions */
+      .post-title {
+        display: inline-block;
+        transform-origin: left top;
+        will-change: transform, opacity;
+      }
+
+      /* 侧边栏 */
+      .blog-post-sidebar {
+        width: 320px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 5rem;
+        align-self: flex-start;
+        max-height: calc(100vh - 4rem);
+      }
+
+      .content-container {
+        display: flex;
+        flex-direction: row;
+        margin: 0 auto;
+        max-width: 1200px;
+      }
+
+      .welcome {
+        width: 100%;
+        max-width: 1200px;
+        margin: 1rem auto;
+        height: 400px;
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+      }
+
+      @media (max-width: 968px) {
+        .blog-post-sidebar {
+          width: 100%;
+          position: static;
+          order: -1;
+          margin-bottom: 2rem;
+        }
+
+        .content-container {
+          flex-direction: column;
+          padding: 0 1rem;
+        }
+      }
+    </style>
+    <Header pageTitle={pageTitle} />
+    {isHome && <div class="yarare-hero cg" >
+    </div>}
+    <div style="" class="content-container">
+      <main class="main-content">
+        <slot />
+      </main>
+      <aside>
+        <div
+          class="blog-post-sidebar"
+          style={isPostsPage ? 'position: static' : ';'}
+        >
+          <Sidebar post={post}/>
+        </div>
+        <div class="blog-post-sidebar">
+          <slot name="aside" />
+        </div>
+      </aside>
+    </div>
+    <slot name="bottom" />
+    <Footer />
+    <FAB client:only="svelte" />
+    <script>
+      import { ClickScrollPlugin, OverlayScrollbars } from 'overlayscrollbars'
+      import { installScrollbars } from '@/scripts/scrollbars'
+
+      OverlayScrollbars.plugin(ClickScrollPlugin)
+      installScrollbars(document, body => OverlayScrollbars(body, {
+        scrollbars: { theme: 'os-theme-dark', autoHide: 'leave', clickScroll: true }
+      }))
+    </script>
+    <script>
+      import { initLinkPreviews } from '@/scripts/link-preview'
+
+      initLinkPreviews()
+    </script>
+  </body>
+</html>

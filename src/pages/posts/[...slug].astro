@@ -1,0 +1,386 @@
+---
+import ToC from '@/components/ToC.astro'
+import Breadcrumb from '@/components/Breadcrumb.svelte'
+import ReadingProgress from '@/components/ReadingProgress.svelte'
+import { render, type CollectionEntry } from 'astro:content'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { Image } from 'astro:assets'
+import { extractExcerptFromMarkdown, formatDate, sanitizeViewTransitionName, generateBreadcrumbItems, countWords } from '@/utils/helpers'
+import { generatePostStructuredData } from '@/utils/structured-data'
+import { ANIMATION_DURATION, EASING } from '@/utils/constants'
+import PostList from '@/components/PostList/PostList.svelte'
+import CategoryPage from './[category].astro'
+import { getPublishedPosts, groupPostsByDirectory } from '@/utils/content'
+import type { PostFrontmatter } from '@/types'
+import '@/components/PostList/PostList.css'
+import '/node_modules/katex/dist/katex.min.css'
+
+type StaticPath = {
+  params: {
+    slug: string;
+  };
+  props: {
+    post?: CollectionEntry<'posts'>;
+    category?: string;
+    posts?: CollectionEntry<'posts'>[];
+  };
+};
+
+export async function getStaticPaths(): Promise<StaticPath[]> {
+  const posts = await getPublishedPosts()
+  const paths: StaticPath[] = posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post }
+  }))
+  for (const [category, categoryPosts] of groupPostsByDirectory(posts)) {
+    if (!category.includes('/')) continue
+    paths.push({ params: { slug: category }, props: { category, posts: categoryPosts } })
+  }
+  return paths
+}
+
+interface Props {
+  post?: CollectionEntry<'posts'>;
+  category?: string;
+  posts?: CollectionEntry<'posts'>[];
+}
+
+const { post, category, posts = [] } = Astro.props as Props
+const { Content, headings } = post ? await render(post) : { Content: undefined, headings: [] }
+
+const description = post?.data.description || extractExcerptFromMarkdown(post?.body || '')
+
+const breadcrumbItems = generateBreadcrumbItems(post?.id || category || '')
+const structuredData = post
+  ? generatePostStructuredData(post, description, Astro.site?.origin || Astro.url.origin, breadcrumbItems)
+  : null
+
+// Backlinks logic
+const allPosts = await getPublishedPosts()
+let backlinkData: Record<string, string[]> = {}
+try {
+  // Use import.meta.glob or direct import for the JSON
+  // Relative to src/pages/posts/[...slug].astro, .cache is at ../../../.cache
+  const data = await import('../../../.cache/backlinks.json')
+  backlinkData = data.default || {}
+} catch {
+  console.log('No backlinks found yet')
+}
+const currentBacklinks = post ? backlinkData[post.id] || [] : []
+const linkedPosts = allPosts.filter(p => currentBacklinks.includes(p.id))
+
+// page-specific title morph animation
+const anim = {
+  old: { name: 'title-old', duration: ANIMATION_DURATION.slow, easing: EASING.smooth, fillMode: 'both' },
+  new: { name: 'title-new', duration: ANIMATION_DURATION.slow, easing: EASING.smooth, fillMode: 'both' }
+}
+const customTransition = { forwards: anim, backwards: anim }
+---
+
+{post && Content ? <BaseLayout postFrontmatter={{ ...post.data, description } as PostFrontmatter} post={post} structuredData={structuredData}>
+  <ReadingProgress client:load />
+  <article class="blog-post-container">
+    <div class="blog-post-content">
+      <Breadcrumb client:idle items={breadcrumbItems} />
+
+      <header class="post-header">
+        <h1 class="post-title" transition:name={sanitizeViewTransitionName(post.id)} transition:animate={customTransition}>{post.data.title}</h1>
+        <!-- <p class="post-description">{post.data.description}</p> -->
+        <div class="post-meta">
+          <time
+            class="post-date"
+            datetime={new Date(post.data.date).toISOString()}
+          >
+            {formatDate(post.data.date)}
+          </time>
+          <span class="meta-separator">•</span>
+          <span class="reading-time">
+            {countWords(post.body || '')} {'words'}
+          </span>
+        </div>
+        <!-- <div class="post-tags">
+          {
+            post.data.tags?.map((tag: string) => (
+              <a href={`/tags/${tag}`} class="post-tag">
+                #{tag}
+              </a>
+            ))
+          }
+        </div> -->
+      </header>
+
+      {
+        post.data.image && (
+          <figure class="post-image">
+            <Image
+              src={post.data.image.url}
+              alt={post.data.image.alt || post.data.title}
+              width={1200}
+              height={600}
+              class="banner-image"
+              loading="eager"
+              decoding="async"
+            />
+            {post.data.image.alt && (
+              <figcaption>{post.data.image.alt}</figcaption>
+            )}
+          </figure>
+        )
+      }
+
+      <div class="post-content markdown-body">
+        <Content />
+      </div>
+
+      <footer class="post-footer">
+        {
+          linkedPosts.length > 0 && (
+            <section class="backlinks-section">
+              <div class="timeline-post">
+                <div class="post-info year">
+                  <span class="post-date year">referred</span>
+                  <div class="timeline-connector year">
+                    <div class="post-marker year" />
+                  </div>
+                  <span class="inline-tag">{linkedPosts.length} 篇文章引用</span>
+                </div>
+              </div>
+              <PostList posts={linkedPosts} client:load />
+            </section>
+          )
+        }
+      </footer>
+    </div>
+  </article>
+
+  {headings && headings.length > 0 && <ToC slot="aside" headings={headings} />}
+  <div slot="bottom" class="comments-wrapper">
+    <!-- <Comments client:visible /> -->
+  </div>
+
+  <script>
+  import mediumZoom from 'medium-zoom'
+
+  function toggleSpoiler(wrapper: HTMLElement) {
+    const expanded = wrapper.dataset.hidden === 'true'
+    wrapper.dataset.hidden = String(!expanded)
+    wrapper.setAttribute('aria-expanded', String(expanded))
+  }
+
+  document.addEventListener('click', event => {
+    const wrapper = event.target instanceof Element ? event.target.closest<HTMLElement>('.post-content .blur-wrapper') : null
+    if (wrapper) toggleSpoiler(wrapper)
+  })
+  document.addEventListener('keydown', event => {
+    const wrapper = event.target instanceof Element ? event.target.closest<HTMLElement>('.post-content .blur-wrapper') : null
+    if (wrapper && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault()
+      toggleSpoiler(wrapper)
+    }
+  })
+
+  const zoom = mediumZoom({ margin: 24 })
+  function updateZoomTheme() {
+    zoom.update({ background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#121212' : '#ffffff' })
+  }
+  let zoomRevision = 0
+  function initZoom() {
+    zoomRevision++
+    zoom.detach()
+    zoom.attach('.post-content img, .post-image img')
+    updateZoomTheme()
+  }
+  const observer = new MutationObserver(updateZoomTheme)
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+  document.addEventListener('astro:page-load', initZoom)
+  document.addEventListener('astro:before-swap', () => {
+    const revision = ++zoomRevision
+    void zoom.close().then(() => { if (revision === zoomRevision) zoom.detach() })
+  })
+  initZoom()
+  </script>
+</BaseLayout> : <CategoryPage category={category!} posts={posts} />}
+
+<style>
+  /* 文章容器 */
+  .blog-post-container {
+    display: flex;
+    gap: 3rem;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  /* 主要内容区域 */
+  .blog-post-content {
+    flex: 1;
+    min-width: 0;
+    max-width: 800px;
+  }
+
+  /* 文章头部 */
+  .post-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .post-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+
+  .post-description {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .meta-separator {
+    opacity: 0.6;
+  }
+
+  /* 文章图片 */
+  .post-image {
+    margin: 2rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .post-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    /* transition: transform 0.3s ease; */ /* Removed to avoid conflict with medium-zoom */
+    background-color: var(--color-bg-tertiary);
+  }
+
+  .post-image:hover img {
+    /* transform: scale(1.02); */ /* Removed to avoid conflict with medium-zoom */
+  }
+
+  /* Post content images optimization */
+  .post-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1.5rem auto;
+    display: block;
+    cursor: zoom-in;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    background-color: var(--color-bg-tertiary);
+    /* transition: transform 0.3s ease, box-shadow 0.3s ease; */ /* Removed to avoid conflict with medium-zoom */
+    transition: box-shadow 0.3s ease;
+  }
+
+  .post-content :global(img:hover) {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .post-image figcaption {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    padding: 0.75rem;
+    background: var(--bg-tertiary);
+  }
+
+  .post-content {
+    font-size: 1.1rem;
+    line-height: 1.2;
+    color: var(--text-secondary);
+  }
+
+  /* 文章底部 & 反向链接 (Timeline Style) */
+  .post-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .backlinks-section {
+    margin-top: 2rem;
+  }
+
+  .backlinks-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+  }
+
+  .backlink-icon {
+    color: var(--theme-color);
+    opacity: 0.8;
+  }
+
+
+  /* 响应式设计 */
+  @media (max-width: 968px) {
+    .blog-post-container {
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .blog-post-sidebar {
+      width: 100%;
+      position: static;
+      order: -1;
+      margin-bottom: 2rem;
+    }
+
+    .post-title {
+      font-size: 2rem;
+    }
+
+    .post-description {
+      font-size: 1.1rem;
+    }
+
+    /* 为小屏幕添加顶部间距，避免内容被顶部滚动目录遮挡 */
+    .post-header {
+      margin-top: 2rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .blog-post-container {
+     /* padding: 1rem 0.5rem; */
+    }
+
+    .post-title {
+      font-size: 1.75rem;
+    }
+
+    .post-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .meta-separator {
+      display: none;
+    }
+  }
+
+  .comments-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem 4rem;
+  }
+</style>

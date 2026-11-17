@@ -1,0 +1,83 @@
+---
+import { type CollectionEntry } from 'astro:content'
+import { siteConfig } from '@/config/site.config'
+import type { PostEntry } from '@/types'
+import Tag from './Tag.astro'
+import { t } from '@/utils/i18n'
+import { getPublishedPosts } from '@/utils/content'
+import { formatDate } from '@/utils/helpers'
+
+interface Props {
+  intro?: string; // 一句话简介（可选）
+  post?: PostEntry | null; // post
+}
+
+const { intro = siteConfig.description, post = null } = Astro.props as Props
+
+const allBlogPosts: CollectionEntry<'posts'>[] = await getPublishedPosts()
+
+const latestUpdate = allBlogPosts.reduce<Date | null>((latest, entry) => {
+  const updated = entry.data.updated || entry.data.date
+  return !latest || updated > latest ? updated : latest
+}, null)
+
+const tagCountMap: Map<string, number> = new Map()
+
+allBlogPosts.map((post) => {
+  const tags: string[] = Array.isArray(post.data.tags)
+    ? post.data.tags
+    : post.data.tags
+      ? [post.data.tags]
+      : []
+
+  // 更新标签计数
+  tags.forEach((tag) => {
+    if (tagCountMap.has(tag)) {
+      tagCountMap.set(tag, tagCountMap.get(tag)! + 1)
+    } else {
+      tagCountMap.set(tag, 1)
+    }
+  })
+});
+---
+
+<div class="profile-sidebar">
+  <div class="profile-avatar">
+    <!-- <img src="/avatar.jpg" alt="你的昵称" class="avatar-img" /> -->
+  </div>
+  <h3 class="profile-name">{siteConfig.author.name}</h3>
+  <p class="profile-intro">{intro}</p>
+
+  <!-- 社交链接 -->
+  <!-- <div class="profile-social">
+    <a href="https://github.com/xxx" aria-label="GitHub">🔗</a>
+    <a href="mailto:xxx@xxx.com" aria-label="邮箱">📧</a>
+  </div> -->
+
+  <div class="profile-stats">
+    <div class="stat-item">📝 {allBlogPosts.length} {t('sidebar.stats.posts')}</div>
+    <div class="stat-item">🏷️ {Array.from(tagCountMap).length} {t('sidebar.stats.tags')}</div>
+    <div class="stat-item">
+      {latestUpdate ? formatDate(latestUpdate) : '—'}
+      {t('sidebar.stats.updated')}
+    </div>
+  </div>
+  <Tag post={post} />
+</div>
+
+<style>
+  .profile-sidebar {
+    width: 100%;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .avatar-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 80px;
+    object-fit: cover;
+  }
+</style>

@@ -1,0 +1,243 @@
+---
+import { siteConfig } from '@/config/site.config'
+import type { StructuredData } from '@/types'
+import { buildUrl } from '@/utils/helpers'
+import { serializeStructuredData } from '@/utils/structured-data'
+
+interface Props {
+  pageTitle: string;
+  description?: string;
+  ogImage?: string;
+  canonicalUrl?: string;
+  structuredData?: StructuredData | null;
+  needGiscus?: boolean;
+}
+
+const {
+  pageTitle,
+  description = siteConfig.description,
+  ogImage = '',
+  canonicalUrl = Astro.url.href,
+  structuredData = null,
+  needGiscus = false
+} = Astro.props as Props
+const structuredDataJson = structuredData
+  ? serializeStructuredData(structuredData)
+  : null
+
+import { ClientRouter } from 'astro:transitions'
+import 'nprogress/nprogress.css';
+---
+
+<head>
+  <meta charset="utf-8" />
+  <!-- Bridge the first paint before the scrollbar module has downloaded. -->
+  <style is:inline>
+    html[data-overlayscrollbars-initialize]:not([data-overlayscrollbars-viewport]),
+    html[data-overlayscrollbars-initialize]:not([data-overlayscrollbars-viewport]) > body,
+    body[data-overlayscrollbars-initialize]:not([data-overlayscrollbars-viewport]) {
+      scrollbar-width: none !important;
+    }
+    html[data-overlayscrollbars-initialize]:not([data-overlayscrollbars-viewport])::-webkit-scrollbar,
+    html[data-overlayscrollbars-initialize]:not([data-overlayscrollbars-viewport]) > body::-webkit-scrollbar,
+    body[data-overlayscrollbars-initialize]:not([data-overlayscrollbars-viewport])::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+  </style>
+  <script is:inline>
+    (() => {
+      const root = document.documentElement
+      root.setAttribute('data-overlayscrollbars-initialize', '')
+      // Failed or very slow module loads must leave a usable native scrollbar.
+      const timeout = window.setTimeout(() => {
+        if (root !== document.documentElement || !root.hasAttribute('data-overlayscrollbars-initialize')) return
+        root.setAttribute('data-scrollbars-fallback', '')
+        root.removeAttribute('data-overlayscrollbars-initialize')
+        document.body?.removeAttribute('data-overlayscrollbars-initialize')
+      }, 5000)
+      document.addEventListener('pudding:scrollbars-ready', () => window.clearTimeout(timeout), { once: true })
+    })()
+  </script>
+  <link rel="icon" type="image/svg+xml" href={buildUrl('favicon.svg')} />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="generator" content={Astro.generator} />
+  <link rel="sitemap" href={buildUrl('sitemap.xml')} />
+
+  <title>{pageTitle}</title>
+  <meta name="description" content={description} />
+  <meta name="keywords" content={siteConfig.keywords.join(', ')} />
+
+  <link rel="canonical" href={canonicalUrl} />
+
+  <meta name="robots" content="index, follow" />
+  <meta
+    name="googlebot"
+    content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+  />
+
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content={needGiscus ? 'article' : 'website'} />
+  <meta property="og:url" content={canonicalUrl} />
+  {ogImage && <meta property="og:image" content={ogImage} />}
+  <meta property="og:site_name" content={siteConfig.name} />
+  <meta property="og:locale" content={siteConfig.locale} />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={description} />
+  {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+  <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*; font-src 'self' data:;" /> -->
+  <!-- <meta http-equiv="X-XSS-Protection" content="1; mode=block" /> -->
+  <!-- <meta http-equiv="X-Content-Type-Options" content="nosniff" /> -->
+  <!-- <meta name="referrer" content="strict-origin-when-cross-origin" /> -->
+
+  <meta
+    name="theme-color"
+    content={siteConfig.theme.light.primary}
+    media="(prefers-color-scheme: light)"
+  />
+  <meta
+    name="theme-color"
+    content={siteConfig.theme.dark.primary}
+    media="(prefers-color-scheme: dark)"
+  />
+  {
+    structuredDataJson && (
+      <script type="application/ld+json" set:html={structuredDataJson} />
+    )
+  }
+
+  <link
+    rel="preload"
+    href={buildUrl('fonts/Nunito/static/Nunito-Regular.ttf')}
+    as="font"
+    type="font/ttf"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href={buildUrl('fonts/Nunito/static/Nunito-Bold.ttf')}
+    as="font"
+    type="font/ttf"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href={buildUrl('fonts/ChillRoundFRegular/862367d4db6a95f86fc8b4fb4cf3b1e7.woff2')}
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href={buildUrl('fonts/ChillRoundFRegular/596b1e644d3ea13847eaac7729c256b1.woff2')}
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+
+  <!-- 为文章页预载代码字体 -->
+  {needGiscus && (
+    <link
+      rel="preload"
+      href={buildUrl('fonts/JetBrainsMono/fonts/variable/JetBrainsMono[wght].ttf')}
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+  )}
+
+  <!-- 引入字体 (本地切片加载) -->
+  <link
+    rel="stylesheet"
+    href={buildUrl('fonts/ChillRoundFRegular/result.css')}
+    media="print"
+    onload="this.setAttribute('media','all')"
+  />
+  <link
+    rel="stylesheet"
+    href={buildUrl('fonts/ChillRoundFBold/result.css')}
+    media="print"
+    onload="this.setAttribute('media','all')"
+  />
+
+  <!-- 预连接外部资源 (仅在需要时) -->
+  {needGiscus && (
+    <>
+      <link rel="preconnect" href="https://giscus.app" crossorigin />
+      <link rel="dns-prefetch" href="https://giscus.app" />
+    </>
+  )}
+
+  <style is:inline set:html={`
+    /* Localized Nunito */
+    @font-face {
+      font-family: 'Nunito';
+      src: url('${buildUrl('fonts/Nunito/static/Nunito-Regular.ttf')}') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Nunito';
+      src: url('${buildUrl('fonts/Nunito/static/Nunito-Bold.ttf')}') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    /* Localized JetBrains Mono */
+    @font-face {
+      font-family: 'JetBrains Mono';
+      src: url('${buildUrl('fonts/JetBrainsMono/fonts/variable/JetBrainsMono[wght].ttf')}') format('truetype');
+      font-weight: 400 700; /* 缩小范围，减少计算 */
+      font-style: normal;
+      font-display: swap;
+    }
+  `}></style>
+
+  <script is:inline>
+(function() {
+  function getTheme() {
+    try {
+      const saved = localStorage.getItem('theme')
+      if (saved === 'light' || saved === 'dark') return saved
+    } catch { /* Storage can be unavailable in privacy modes. */ }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+  function applyTheme(doc = document) {
+    const theme = getTheme()
+    doc.documentElement.classList.remove('light', 'dark')
+    doc.documentElement.classList.add(theme)
+    doc.documentElement.setAttribute('data-theme', theme)
+  }
+  applyTheme()
+  if (!window.__puddingThemeInitialized) {
+    window.__puddingThemeInitialized = true
+    document.addEventListener('astro:after-swap', () => applyTheme())
+    document.addEventListener('astro:before-swap', event => applyTheme(event.newDocument))
+  }
+})()
+  </script>
+
+  <ClientRouter />
+
+
+
+  <script>
+import NProgress from 'nprogress'
+
+NProgress.configure({ showSpinner: false, minimum: 0.1 })
+
+document.addEventListener('astro:before-preparation', () => {
+  NProgress.start()
+})
+
+document.addEventListener('astro:page-load', () => {
+  NProgress.done()
+})
+  </script>
+</head>

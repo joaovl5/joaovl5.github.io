@@ -1,0 +1,89 @@
+---
+import PostList from "@/components/PostList/PostList.svelte";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { type CollectionEntry } from "astro:content";
+import { getPublishedPosts } from '@/utils/content'
+import "@/components/PostList/PostList.css";
+import { t } from "@/utils/i18n";
+
+const posts: CollectionEntry<"posts">[] = await getPublishedPosts();
+const sortedPosts = [...posts].sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+);
+
+const yearPostsMap: Map<string, CollectionEntry<"posts">[]> = new Map();
+for (const post of sortedPosts) {
+  const year = new Date(post.data.date).getUTCFullYear().toString();
+  if (!yearPostsMap.has(year)) {
+    yearPostsMap.set(year, []);
+  }
+  yearPostsMap.get(year)!.push(post);
+}
+
+const sortedYears = Array.from(yearPostsMap.keys()).sort((a, b) =>
+  b.localeCompare(a),
+);
+---
+
+<BaseLayout pageTitle="时间线">
+  <div class="timeline-page">
+    <div class="timeline-container">
+      {
+        sortedYears.map((year) => {
+          const yearPosts = yearPostsMap.get(year);
+          if (!yearPosts || yearPosts.length === 0) return null;
+
+          return (
+            <section id={`year-${year}`} class="year-section">
+              <div class="year-posts">
+                <article class="timeline-post">
+                  <div class="post-content">
+                    <div class="post-info year">
+                      <span class="post-date year">{year}</span>
+                      <div class="timeline-connector year">
+                        <div class="post-marker year" />
+                      </div>
+                      <span class="inline-tag">{yearPosts.length} {t('common.timeline.count')}</span>
+                    </div>
+                  </div>
+                </article>
+                <PostList posts={yearPosts} />
+              </div>
+            </section>
+          );
+        })
+      }
+    </div>
+  </div>
+</BaseLayout>
+<style>
+  .timeline-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 32px 16px;
+    position: relative;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .page-header h1 {
+    font-size: 35px;
+    color: var(--text-primary);
+    margin: 0 0 12px 0;
+  }
+
+  .page-header p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .timeline-container {
+    position: relative;
+  }
+</style>
