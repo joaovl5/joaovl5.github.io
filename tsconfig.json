@@ -4,6 +4,8 @@
   "exclude": ["dist"],
   "compilerOptions": {
     "jsx": "preserve",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "paths": {
       "@/*": ["./src/*"],
       "~/*": ["./src/*"]

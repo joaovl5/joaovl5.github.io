@@ -1,7 +1,17 @@
 ---
+import CurvedText from '@/components/CurvedText.svelte';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 ---
 
 <BaseLayout sidebar={false}>
-  <h1>placeholder</h1>
+  <div id="title-container">
+    <CurvedText client:only />
+  </div>
 </BaseLayout>
+
+<style>
+  #title-container {
+    min-height: 200px;
+
+  }
+</style>

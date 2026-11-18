@@ -86,21 +86,12 @@ const fabPosition = { ...defaultPosition, ...position };
     pointer-events: auto;
   }
 
-  .icon {
-    width: 20px;
-    height: 20px;
-    transition: transform 0.3s ease;
-  }
-
   .fab:hover {
     background-color: var(--primary-color);
     color: white;
     box-shadow: 0 8px 20px color-mix(in srgb, var(--primary-color) 30%, transparent);
   }
 
-  .fab:hover .icon {
-    transform: translateY(-2px);
-  }
 
   .fab:focus-visible {
     outline: 2px solid var(--primary-color);
@@ -120,6 +111,6 @@ const fabPosition = { ...defaultPosition, ...position };
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .fab, .icon { transition: none; }
+    .fab { transition: none; }
   }
 </style>

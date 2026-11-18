@@ -58,6 +58,7 @@ export interface I18nConfig {
     nav: {
       home: string;
       timeline: string;
+      posts: string;
       about: string;
     };
   };

@@ -3,6 +3,7 @@ import { siteConfig } from '@/config/site.config';
 import type { StructuredData } from '@/types';
 import { buildUrl } from '@/utils/helpers';
 import { serializeStructuredData } from '@/utils/structured-data';
+import { Font } from 'astro:assets';
 
 interface Props {
   pageTitle: string;
@@ -10,6 +11,7 @@ interface Props {
   ogImage?: string;
   canonicalUrl?: string;
   structuredData?: StructuredData | null;
+  isArticle: boolean;
 }
 
 const {
@@ -30,6 +32,7 @@ import 'nprogress/nprogress.css';
 
 <head>
   <meta charset="utf-8" />
+  <Font cssVariable='--font-serif' />
   <!-- Bridge the first paint before the scrollbar module has downloaded. -->
   <style is:inline>
     html[data-overlayscrollbars-initialize]:not([data-overlayscrollbars-viewport]),
@@ -110,20 +113,6 @@ import 'nprogress/nprogress.css';
     )
   }
 
-  <link
-    rel="preload"
-    href={buildUrl('fonts/Nunito/static/Nunito-Regular.ttf')}
-    as="font"
-    type="font/ttf"
-    crossorigin
-  />
-  <link
-    rel="preload"
-    href={buildUrl('fonts/Nunito/static/Nunito-Bold.ttf')}
-    as="font"
-    type="font/ttf"
-    crossorigin
-  />
   <link
     rel="preload"
     href={buildUrl('fonts/ChillRoundFRegular/862367d4db6a95f86fc8b4fb4cf3b1e7.woff2')}

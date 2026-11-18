@@ -173,8 +173,10 @@ export function generateBreadcrumbItems(
   postId: string,
   _isCategory: boolean = false,
 ): Array<{ label: string; href: string }> {
+  // Posts live under /posts/, which is their own root: the trail starts there
+  // instead of at the site root so the hierarchy matches the URL.
   const items: Array<{ label: string; href: string }> = [
-    { label: 'Home', href: buildUrl('') },
+    { label: 'Posts', href: buildUrl(['posts', '']) },
   ];
 
   const pathParts = postId.split('/').filter(Boolean);
