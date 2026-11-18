@@ -1,0 +1,291 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { siteConfig } from '@/config/site.config';
+import '@/styles/global.css';
+
+const pageTitle = 'About';
+const { name: authorName, slugId } = siteConfig.author;
+---
+
+<BaseLayout pageTitle={pageTitle}>
+  <article class="about-container">
+    <!-- Header -->
+    <header class="about-hero">
+      <div class="ambient-glow"></div>
+      <h1 class="title">{authorName} <span class="sub-title">/ {slugId}</span></h1>
+      <p class="tagline">I don't know how to write catchy taglines.</p>
+      <p class="poetic-intro">
+      "Always code as if the guy who ends up maintaining your code will be a
+      violent psychopath who knows where you live." — Rick Osborne
+      </p>
+    </header>
+
+    <!-- Main content - conversational style -->
+    <div class="about-body">
+
+      <section class="about-section">
+        <p>
+        I'm João Pedro, currently based in São Paulo, Brazil, while working
+        remotely as a Software Engineer! Depending on whether you're a
+        glass "half-full" or "half-empty" person, my biggest strength or
+        weakness is having a lot of interests. My best work comes from seemingly
+        farfetched connections being drawn to form robust solutions.
+        </p>
+        <p>
+        My stronger sides are in Python, Applied AI/ML, and back-end in general,
+        with lots of interest in DevOps, Functional Programming, and Rust. As a
+        hobby, I maintain a personal infrastructure (popularly called a
+        "home-lab") where I develop much of these skills, especially in Nix and
+        Infrastructure-as-Code.
+        </p>
+        <p>
+        More niche interests of mine include enjoying Lisps, particularly ones
+        deriving from Clojure. My Neovim configuration is written in Fennel, a
+        Lisp that compiles to Lua. The programming language I'm working on,
+        called <a href="https://github.com/joaovl5/winter">Winter</a>, is a Lisp
+        that compiles to Nix, with some quality-of-life improvements over the
+        Nix language, and more soon to come such as a type system.
+        </p>
+        <p>
+        Outside of tech, I enjoy reading and writing. Part of it
+        being technical articles and what not, and another part being
+        weird stories like <a href="https://www.goodreads.com/book/show/54870256-there-is-no-antimemetics-division">
+          "There is No Antimemetics Division"</a>. I'm also into gaming! As of
+        writing this, I've been playing <a href="https://store.steampowered.com/app/3669870/CONTROL_Resonant/">"CONTROL Resonant"</a>,
+        and I'm having a blast, highly recommend for those into surrealist
+        visuals and a great, albeit very weird, story.
+        </p>
+      </section>
+    </div>
+  </article>
+
+  <style>
+    /* Container & Layout */
+    .about-container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--spacing-xl) var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+      position: relative;
+    }
+
+    /* Ambient Lighting Effect */
+    .ambient-glow {
+      position: absolute;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 350px;
+      height: 200px;
+      background: radial-gradient(circle, var(--color-theme-mix-20) 0%, transparent 70%);
+      filter: blur(40px);
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    /* Hero */
+    .about-hero {
+      text-align: center;
+      padding: var(--spacing-xl) 0 var(--spacing-sm);
+      position: relative;
+    }
+
+    .about-hero .title {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: var(--font-weight-extrabold);
+      color: var(--text-primary);
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .about-hero .sub-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-normal);
+      color: var(--text-muted);
+      font-family: var(--font-family-mono);
+    }
+
+    .tagline {
+      font-size: var(--font-size-sm);
+      font-family: var(--font-family-mono);
+      color: var(--text-muted);
+      margin: var(--spacing-xs) 0 0;
+      letter-spacing: 0.02em;
+    }
+
+    .poetic-intro {
+      font-size: var(--font-size-base);
+      font-style: italic;
+      color: var(--text-secondary);
+      max-width: 620px;
+      margin: var(--spacing-md) auto 0;
+      line-height: var(--line-height-relaxed);
+    }
+
+    .poetic-intro2 {
+      font-size: var(--font-size-sm);
+      font-style: italic;
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin: var(--spacing-md) auto 0;
+      line-height: var(--line-height-relaxed);
+      text-align: start;
+    }
+
+    /* Body */
+    .about-body {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .about-section {
+      line-height: var(--line-height-relaxed);
+      color: var(--text-secondary);
+      font-size: var(--font-size-base);
+    }
+
+    .about-section p {
+      margin: 0 0 var(--spacing-sm);
+    }
+
+    .about-section p:last-child {
+      margin-bottom: 0;
+    }
+
+    .about-section h2 {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin: 0 0 var(--spacing-sm);
+    }
+
+    .about-section strong {
+      color: var(--text-primary);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    /* Inline aside — lighter, parenthetical */
+    .aside {
+      color: var(--text-muted);
+      font-size: 0.92em;
+    }
+
+    /* Block aside — styled like a diary excerpt */
+    .aside-block {
+      color: var(--text-muted);
+      font-size: var(--font-size-sm);
+      border-left: 2px solid var(--border-color);
+      padding-left: var(--spacing-md);
+      margin-top: var(--spacing-sm);
+      font-style: italic;
+      line-height: var(--line-height-relaxed);
+    }
+
+    /* Divider */
+    .divider {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: var(--font-size-sm);
+      letter-spacing: 0.5em;
+      padding: var(--spacing-xs) 0;
+      user-select: none;
+      opacity: 0.5;
+    }
+
+    /* List */
+    .about-list {
+      list-style: none;
+      padding: 0;
+      margin: var(--spacing-xs) 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+    }
+
+    .about-list li {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-md);
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      transition: border-color var(--transition-normal);
+    }
+
+    .about-list li:hover {
+      border-color: var(--color-theme-mix-20);
+    }
+
+    .list-label {
+      font-family: var(--font-family-mono);
+      font-weight: var(--font-weight-semibold);
+      color: var(--theme-color);
+      font-size: var(--font-size-sm);
+    }
+
+    /* Tags */
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+    }
+
+    .tool-tag {
+      font-size: var(--font-size-sm);
+      font-family: var(--font-family-mono);
+      color: var(--text-secondary);
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 0.35rem 0.7rem;
+      border-radius: var(--radius-lg);
+      transition:
+        transform var(--transition-slow),
+        border-color var(--transition-normal),
+        color var(--transition-normal);
+      cursor: default;
+      user-select: none;
+    }
+
+    .tool-tag:hover {
+      color: var(--theme-color);
+      border-color: var(--theme-color);
+      transform: translateY(-1px);
+    }
+
+    /* Footer */
+    .about-footer {
+      text-align: center;
+      padding: var(--spacing-lg) 0;
+      border-top: 1px solid var(--border-color);
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+    }
+
+    .about-footer p {
+      margin: 0;
+    }
+
+    .theme-link {
+      color: var(--theme-color);
+      text-decoration: none;
+      font-weight: var(--font-weight-semibold);
+      border-bottom: 1px solid transparent;
+      transition: border-color var(--transition-normal);
+    }
+
+    .theme-link:hover {
+      border-bottom-color: var(--theme-color);
+    }
+
+    .copyright {
+      font-size: var(--font-size-xs);
+    }
+  </style>
+</BaseLayout>

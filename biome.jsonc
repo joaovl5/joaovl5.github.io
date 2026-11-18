@@ -24,14 +24,28 @@
   },
   "linter": {
     "domains": {
-      "svelte": "all",
-      "tailwind": "all"
+      "svelte": "recommended",
+      "tailwind": "recommended",
+      "astro": "recommended"
     },
     "enabled": true,
     "rules": {
       "preset": "recommended"
     }
   },
+  "overrides": [
+    {
+      "includes": ["**/*.svelte", "**/*.astro"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off",
+            "noUnusedImports": "off"
+          }
+        }
+      }
+    }
+  ],
   "vcs": {
     "clientKind": "git",
     "enabled": true,
