@@ -23,7 +23,7 @@ img {
 }
 
 html[data-theme="dark"] .theme-toggle-indicator {
-  transform: translateX(calc(100% + 3px));
+  transform: translateX(100%);
 }
 
 html[data-theme="dark"] .theme-options .nav-link.dark {

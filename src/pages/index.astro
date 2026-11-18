@@ -1,17 +1,92 @@
 ---
 import CurvedText from '@/components/CurvedText.svelte';
-import BaseLayout from '@/layouts/BaseLayout.astro';
+import BaseMinimal from '@/layouts/BaseMinimal.astro';
+import Divider from '@/components/Divider.astro';
+import { siteConfig } from '@/config/site.config';
+import { buildUrl } from '@/utils/helpers';
+import { t } from '@/utils/i18n';
+
+const navItems = siteConfig.navItems.filter((item) => item.labelKey !== 'home');
 ---
 
-<BaseLayout sidebar={false}>
+<BaseMinimal>
   <div id="title-container">
     <CurvedText client:only />
   </div>
-</BaseLayout>
+  <Divider/>
+  <nav class="home-nav">
+    <ul class="home-nav-list">
+      {
+        navItems.map((item) => (
+          <li class="home-nav-item">
+            <a class="nav-link" href={buildUrl(item.href)}>
+              {t(`header.nav.${item.labelKey}` as any)}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <div class="home-links">
+    {
+      siteConfig.socialLinks.map((link) => (
+        <a
+          class="home-link"
+          href={buildUrl(link.href)}
+          aria-label={t(link.nameKey)}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t(link.nameKey)}
+        </a>
+      ))
+    }
+  </div>
+</BaseMinimal>
 
 <style>
   #title-container {
-    min-height: 200px;
+    width: 100%;
+    /* The curved text reserves a tall box; pull the nav closer to the name. */
+    margin-bottom: -2rem;
+  }
 
+  .home-nav-list {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .home-nav-item {
+    position: relative;
+  }
+
+  .home-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+  }
+
+  .home-link {
+    color: var(--text-secondary);
+    text-decoration: underline;
+    transition: color 0.2s ease;
+  }
+
+  .home-link:hover {
+    color: var(--theme-color);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-link {
+      transition: none;
+    }
   }
 </style>

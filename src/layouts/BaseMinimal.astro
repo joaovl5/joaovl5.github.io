@@ -1,0 +1,94 @@
+---
+import '@/styles/tokens.css';
+import '@/styles/global.css';
+import 'overlayscrollbars/styles/overlayscrollbars.css';
+import FAB from '@/components/FAB.svelte';
+import Head from '@/components/Head.astro';
+import Search from '@/components/Search.svelte';
+import ThemeToggle from '@/components/ThemeToggle.svelte';
+import { siteConfig } from '@/config/site.config';
+import { getPublishedPosts } from '@/utils/content';
+import { getPostUrl } from '@/utils/helpers';
+
+interface Props {
+  pageTitle?: string;
+  description?: string;
+  ogImage?: string;
+  canonicalUrl?: string;
+}
+
+const {
+  pageTitle = siteConfig.name,
+  description = siteConfig.description,
+  ogImage = '',
+  canonicalUrl = Astro.url.href,
+} = Astro.props as Props;
+
+const searchablePosts = (await getPublishedPosts()).map((post) => ({
+  id: post.id,
+  title: post.data.title,
+  url: getPostUrl(post.id),
+}));
+---
+
+<!DOCTYPE html>
+<html lang={siteConfig.locale}>
+  <Head
+    pageTitle={pageTitle}
+    description={description}
+    ogImage={ogImage}
+    canonicalUrl={canonicalUrl}
+    isArticle={false}
+  />
+
+  <body>
+    <style>
+      /* No header bar, no footer: one centered column filling the viewport. */
+      .minimal-main {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 2rem 1rem;
+        box-sizing: border-box;
+      }
+
+      /* Transparent corner controls. */
+      .minimal-header {
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        background: transparent;
+      }
+
+      @media (max-width: 768px) {
+        .minimal-header {
+          padding: 0.75rem 1rem;
+        }
+      }
+    </style>
+    <header class="minimal-header">
+      <Search client:load searchablePosts={searchablePosts} />
+      <ThemeToggle client:load />
+    </header>
+    <main class="minimal-main">
+      <slot />
+    </main>
+    <script>
+      import { ClickScrollPlugin, OverlayScrollbars } from 'overlayscrollbars'
+      import { installScrollbars } from '@/scripts/scrollbars'
+
+      OverlayScrollbars.plugin(ClickScrollPlugin)
+      installScrollbars(document, body => OverlayScrollbars(body, {
+        scrollbars: { theme: 'os-theme-dark', autoHide: 'leave', clickScroll: true }
+      }))
+    </script>
+  </body>
+</html>

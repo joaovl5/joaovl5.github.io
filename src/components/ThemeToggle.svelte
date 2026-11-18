@@ -1,5 +1,7 @@
 <script lang="ts">
 import { onMount } from 'svelte';
+import Moon from '@lucide/svelte/icons/moon';
+import Sun from '@lucide/svelte/icons/sun';
 import { t } from '@/utils/i18n';
 
 type Theme = 'light' | 'dark';
@@ -142,20 +144,12 @@ function toggleTheme(event: MouseEvent) {
   aria-pressed={theme === "dark"}
 >
   <span class="theme-options">
-    <span
-      class="nav-link light"
-      aria-hidden="true"
-    >
-      {t('common.theme.light')}
+    <span class="nav-link light theme-option" aria-hidden="true">
+      <Sun size={18} strokeWidth={2} />
     </span>
 
-    <span aria-hidden="true">/</span>
-
-    <span
-      class="nav-link dark"
-      aria-hidden="true"
-    >
-      {t('common.theme.dark')}
+    <span class="nav-link dark theme-option" aria-hidden="true">
+      <Moon size={18} strokeWidth={2} />
     </span>
     <span class="indicator theme-toggle-indicator" aria-hidden="true"></span>
   </span>
@@ -172,6 +166,22 @@ function toggleTheme(event: MouseEvent) {
     color: inherit;
     cursor: pointer;
     position: relative;
+  }
+
+  .theme-options {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    position: relative;
+  }
+
+  /* Equal-width icon slots keep the sliding indicator aligned to each half. */
+  .theme-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    padding: 0.25rem 0;
   }
 
   .indicator.theme-toggle-indicator {
@@ -195,8 +205,25 @@ function toggleTheme(event: MouseEvent) {
 
   /* View Transitions for Theme Toggle */
   :global(.theme-transitioning),
-  :global(.theme-transitioning *:not(.theme-toggle-indicator)) {
+  :global(.theme-transitioning *) {
     transition: none !important;
+  }
+
+  /* During the theme view transition the indicator is painted by its own
+     pseudo-elements, so the live element snaps to the destination and the
+     group below carries the slide — starting on click, not after the circle. */
+  :global(::view-transition-group(theme-indicator)) {
+    animation-duration: 150ms;
+    animation-timing-function: ease-out;
+  }
+
+  :global(::view-transition-image-pair(theme-indicator)) {
+    mix-blend-mode: normal;
+  }
+
+  :global(::view-transition-old(theme-indicator)),
+  :global(::view-transition-new(theme-indicator)) {
+    animation: none;
   }
   :global(.theme-transitioning::view-transition-group(root)),
   :global(.theme-transitioning::view-transition-image-pair(root)),

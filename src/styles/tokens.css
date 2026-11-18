@@ -1,14 +1,14 @@
 :root {
-  --color-theme: #5e7eff;
-  --color-theme-hover: #4d6eef;
+  --color-theme: #845eff;
+  --color-theme-hover: #a78cff;
 
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: color-mix(in srgb, var(--color-theme) 2%, #f8f9fa);
+  --color-bg-primary: #fffef4;
+  --color-bg-secondary: color-mix(in srgb, var(--color-theme) 2%, #faf9f8);
   --color-bg-tertiary: color-mix(in srgb, var(--color-theme) 4%, #f1f1f1);
 
-  --color-text-primary: color-mix(in srgb, var(--color-theme) 10%, #212529);
+  --color-text-primary: color-mix(in srgb, var(--color-theme) 10%, #232129);
   --color-text-secondary: color-mix(in srgb, var(--color-theme) 8%, #5b5b5b);
-  --color-text-muted: color-mix(in srgb, var(--color-theme) 6%, #6c757d);
+  --color-text-muted: color-mix(in srgb, var(--color-theme) 6%, #736c7d);
 
   --color-border: color-mix(
     in srgb,
@@ -100,14 +100,14 @@
 }
 
 [data-theme="dark"] {
-  --color-theme: #ff9eb6;
-  --color-theme-hover: #ff8aa8;
+  --color-theme: #9ea0ff;
+  --color-theme-hover: #bebfff;
 
-  --color-bg-primary: color-mix(in srgb, var(--color-theme) 3%, #121212);
+  --color-bg-primary: color-mix(in srgb, var(--color-theme) 2%, #121212);
   --color-bg-secondary: color-mix(in srgb, var(--color-theme) 5%, #1e1e1e);
   --color-bg-tertiary: color-mix(in srgb, var(--color-theme) 7%, #2d2d2d);
 
-  --color-text-primary: color-mix(in srgb, var(--color-theme) 8%, #e9ecef);
+  --color-text-primary: color-mix(in srgb, var(--color-theme) 8%, #ede9ef);
   --color-text-secondary: color-mix(in srgb, var(--color-theme) 12%, #cdcdcd);
   --color-text-muted: color-mix(in srgb, var(--color-theme) 15%, #adb5bd);
 

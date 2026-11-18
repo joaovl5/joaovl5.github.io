@@ -14,7 +14,7 @@ import Sidebar from '@/components/Sidebar.astro';
 import { siteConfig } from '@/config/site.config';
 import { resolveCanonicalUrl } from '@/scripts/canonical';
 import type { PostEntry, PostFrontmatter, StructuredData } from '@/types';
-import { buildUrl, isHomePage, isPostPage } from '@/utils/helpers';
+import { buildUrl, isPostPage } from '@/utils/helpers';
 
 const isPostsPage = isPostPage(Astro.url.pathname);
 
@@ -63,8 +63,6 @@ if (postFrontmatter?.title) {
 // The header reveals this on scroll. The site-name suffix belongs to the
 // document <title> only, not the in-page header.
 const headerTitle = postFrontmatter?.title ?? pageTitle;
-
-const isHome = isHomePage(Astro.url.pathname);
 ---
 
 <!DOCTYPE html>
@@ -144,9 +142,7 @@ const isHome = isHomePage(Astro.url.pathname);
       }
     </style>
     <Header pageTitle={headerTitle} />
-      {isHome &&
-      <div class="yarare-hero cg" ></div>}
-    <div style="" class="content-container">
+    <div class="content-container">
       <main class="main-content">
         <slot />
       </main>
