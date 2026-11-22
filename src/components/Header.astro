@@ -3,6 +3,7 @@ import { siteConfig } from '@/config/site.config';
 import { getPublishedPosts } from '@/utils/content';
 import { buildUrl, getPostUrl, isPostPage } from '@/utils/helpers';
 import { t } from '@/utils/i18n';
+import Logo from './Logo.astro';
 import Search from './Search.svelte';
 import ThemeToggle from './ThemeToggle.svelte';
 
@@ -30,9 +31,7 @@ const searchablePosts = allPosts.map((post) => ({
 <header class="header" id="header">
   <div class="header-container">
     <div class="brand">
-      <a href={buildUrl('')} class="logo-link">
-        <span class="logo">{t('common.brand')}</span>
-      </a>
+      <Logo />
     </div>
 
     <div class="middle-content">
@@ -220,16 +219,6 @@ const searchablePosts = allPosts.map((post) => ({
     align-items: center;
   }
 
-  .logo-link {
-    text-decoration: none;
-    color: var(--text-primary);
-    font-weight: 700;
-    font-size: 1.25rem;
-    transition: color 0.2s ease;
-  }
-  .logo-link:hover {
-    color: var(--theme-color);
-  }
   .middle-content {
     flex: 1;
     display: flex;

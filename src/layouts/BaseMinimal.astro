@@ -4,6 +4,7 @@ import '@/styles/global.css';
 import 'overlayscrollbars/styles/overlayscrollbars.css';
 import FAB from '@/components/FAB.svelte';
 import Head from '@/components/Head.astro';
+import Logo from '@/components/Logo.astro';
 import Search from '@/components/Search.svelte';
 import ThemeToggle from '@/components/ThemeToggle.svelte';
 import { siteConfig } from '@/config/site.config';
@@ -59,13 +60,25 @@ const searchablePosts = (await getPublishedPosts()).map((post) => ({
       .minimal-header {
         position: fixed;
         top: 0;
+        left: 0;
         right: 0;
         z-index: 100;
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        justify-content: space-between;
         padding: 1rem 1.5rem;
         background: transparent;
+        pointer-events: none;
+      }
+
+      .minimal-header :global(*) {
+        pointer-events: auto;
+      }
+
+      .minimal-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
       }
 
       @media (max-width: 768px) {
@@ -75,8 +88,11 @@ const searchablePosts = (await getPublishedPosts()).map((post) => ({
       }
     </style>
     <header class="minimal-header">
-      <Search client:load searchablePosts={searchablePosts} />
-      <ThemeToggle client:load />
+      <Logo />
+      <div class="minimal-actions">
+        <Search client:load searchablePosts={searchablePosts} />
+        <ThemeToggle client:load />
+      </div>
     </header>
     <main class="minimal-main">
       <slot />

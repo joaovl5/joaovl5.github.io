@@ -1,0 +1,52 @@
+---
+import { siteConfig } from '@/config/site.config';
+import { buildUrl } from '@/utils/helpers';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props as Props;
+const logoUrl = `url("${buildUrl('logo.svg')}")`;
+---
+
+<a
+  href={buildUrl('')}
+  class:list={['site-logo', className]}
+  aria-label={siteConfig.name}
+>
+  <span
+    class="site-logo-mark"
+    aria-hidden="true"
+    style={`--logo-mask: ${logoUrl}`}
+  ></span>
+</a>
+
+<style>
+  .site-logo {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    color: var(--text-primary);
+    transition: color 0.2s ease;
+  }
+
+  .site-logo:hover {
+    color: var(--theme-color);
+  }
+
+  .site-logo-mark {
+    display: block;
+    height: 26px;
+    aspect-ratio: 1024 / 911;
+    background-color: currentColor;
+    -webkit-mask: var(--logo-mask) no-repeat center / contain;
+    mask: var(--logo-mask) no-repeat center / contain;
+  }
+
+  @media (max-width: 768px) {
+    .site-logo-mark {
+      height: 22px;
+    }
+  }
+</style>
